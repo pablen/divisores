@@ -1,0 +1,4 @@
+- refine styles
+- think transitions
+- random initial turn
+- card types (numbers, symbols)

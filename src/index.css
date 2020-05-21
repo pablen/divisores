@@ -1,0 +1,151 @@
+*,
+*::after,
+*::before {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 1rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: rgb(83, 140, 83);
+}
+
+.table {
+  background: rgba(66, 66, 66, 0.2);
+  border-radius: 1vw;
+  box-shadow: 0 2px 9px -3px #000000b5 inset;
+  padding: 2vw 1vw;
+  margin: 3vh 0;
+  text-align: center;
+  min-height: calc(4vw + 15vh);
+}
+
+.cardsStack {
+  justify-content: center;
+  display: flex;
+  min-height: 15vh;
+}
+
+.reverseCard,
+.card {
+  display: inline-block;
+  padding: 0;
+  border: 0.06em solid rgb(192, 192, 192);
+  border-radius: 0.2em;
+  height: 3em;
+  line-height: 3em;
+  margin: 0 0.5vw;
+  width: 2em;
+  font-size: 5vh;
+}
+
+.reverseCard {
+  background-color: rgb(128, 64, 58);
+  border-color: rgb(119, 57, 51);
+  overflow: hidden;
+  text-indent: -999em;
+  vertical-align: bottom;
+}
+
+.card {
+  background: rgb(250, 250, 250);
+  font-family: sans-serif;
+  color: rgb(102, 102, 102);
+  cursor: pointer;
+  transition: transform 300ms;
+}
+
+.card:hover {
+  background-color: rgb(232, 232, 232);
+}
+
+.card.isSelected {
+  background-color: rgb(251, 233, 146);
+  border-color: rgb(251, 192, 146);
+  transform: translateY(-10px);
+}
+
+.card.isSelected:focus,
+.card:focus {
+  outline: none;
+  border-color: rgb(78, 76, 93);
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  margin-top: 1em;
+}
+
+.controls button {
+  color: white;
+  font: inherit;
+  margin: 0 1em;
+  padding: 0.7em 1em;
+  background: rgba(255, 255, 255, 0.23);
+  border: 0.06em solid transparent;
+  flex-basis: 0;
+  border-radius: 0.5em;
+  flex-grow: 1;
+  max-width: 140px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  outline: none;
+  opacity: 0.9;
+}
+
+.controls .large {
+  max-width: 190px;
+}
+
+.controls button:hover {
+  opacity: 1;
+}
+
+.controls button:focus {
+  opacity: 1;
+  border-color: rgb(78, 76, 93);
+}
+
+.controls button[disabled] {
+  cursor: not-allowed;
+  opacity: 0.2;
+}
+
+.message {
+  text-align: center;
+  line-height: 1.5;
+  min-height: 1.5em;
+  margin-bottom: 1em;
+  color: rgb(255, 255, 255);
+}
+
+table {
+  margin: 5vh auto;
+  color: rgb(255, 255, 255);
+  border-top: 1px solid rgba(255, 255, 255, 0.33);
+  padding-top: 1em;
+}
+
+th {
+  padding: 2px 1em;
+}
+
+td.center {
+  text-align: center;
+}
+
+.visuallyHidden {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap; /* added line */
+}
