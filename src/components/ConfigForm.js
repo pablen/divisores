@@ -34,6 +34,12 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
         setMessage('Se necesitan más cartas en el mazo')
         return
       }
+      if (parsedAvailableCards.some((v) => v >= targetValue)) {
+        setMessage(
+          'El mazo no debe contener cartas de valor mayor o igual al de la Escoba'
+        )
+        return
+      }
       setMessage(null)
       onClose()
       onSubmit({
