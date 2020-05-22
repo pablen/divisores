@@ -6,7 +6,14 @@ import * as utils from './utils'
 import Card from './components/Card'
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, utils.getShuffledStack(), init)
+  const [state, dispatch] = useReducer(
+    reducer,
+    {
+      shuffledStack: utils.getShuffledStack(),
+      isPlayerTurn: utils.getRandomTurn(),
+    },
+    init
+  )
   const [isConfigVisible, setIsConfigVisible] = useState(false)
 
   const hasStackEnoughCards =
@@ -139,7 +146,12 @@ function App() {
               onClick={() =>
                 dispatch({
                   type: 'reset',
-                  payload: utils.getShuffledStack(state.config.availableCards),
+                  payload: {
+                    shuffledStack: utils.getShuffledStack(
+                      state.config.availableCards
+                    ),
+                    isPlayerTurn: utils.getRandomTurn(),
+                  },
                 })
               }
               type="button"

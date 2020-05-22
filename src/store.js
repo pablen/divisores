@@ -1,7 +1,7 @@
 import * as defaults from './defaults'
 import * as utils from './utils'
 
-export function init(shuffledStack, config = defaults) {
+export function init({ shuffledStack, isPlayerTurn }, config = defaults) {
   if (
     config.tableCardsAmount + 2 * config.playerCardsAmount >
     config.availableCards.length
@@ -31,7 +31,7 @@ export function init(shuffledStack, config = defaults) {
     playerSweeps: 0,
     aiSweeps: 0,
 
-    isPlayerTurn: true,
+    isPlayerTurn,
     message: null,
     config,
   }
@@ -41,13 +41,25 @@ export function reducer(state, action) {
   console.log(action.type)
   switch (action.type) {
     case 'reset':
-      return init(action.payload, state.config)
+      return init(
+        {
+          shuffledStack: action.payload.shuffledStack,
+          isPlayerTurn: action.payload.isPlayerTurn,
+        },
+        state.config
+      )
 
     case 'config updated':
-      return init(action.payload.shuffledStack, {
-        ...state.config,
-        ...action.payload.newConfig,
-      })
+      return init(
+        {
+          shuffledStack: action.payload.shuffledStack,
+          isPlayerTurn: action.payload.isPlayerTurn,
+        },
+        {
+          ...state.config,
+          ...action.payload.newConfig,
+        }
+      )
 
     case 'player card selected':
       return { ...state, selectedPlayerCard: action.payload, message: null }

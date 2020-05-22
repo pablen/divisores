@@ -6,6 +6,10 @@ export function getShuffledStack(availableCards = defaults.availableCards) {
   return [...availableCards].sort(() => Math.random() * 2 - 1)
 }
 
+export function getRandomTurn() {
+  return Math.random() >= 0.5
+}
+
 /**
  * Retorna un array de índices de cartas para realizar la mejor jugada posible.
  * - Si length === 1: no se pueden robar cartas y el índice corresponde a la carta a descartar
