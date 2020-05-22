@@ -1,15 +1,16 @@
-import React, { useReducer, useEffect } from 'react'
+import React, { useReducer, useEffect, useState } from 'react'
 
 import { init, reducer } from './store'
-import * as config from './config'
+import ConfigForm from './components/ConfigForm'
 import * as utils from './utils'
 import Card from './components/Card'
 
 function App() {
   const [state, dispatch] = useReducer(reducer, utils.getShuffledStack(), init)
+  const [isConfigVisible, setIsConfigVisible] = useState(false)
 
   const hasStackEnoughCards =
-    state.stackCards.length >= 2 * config.playerCardsAmount
+    state.stackCards.length >= 2 * state.config.playerCardsAmount
 
   const hasPlayerCards = state.playerCards.length > 0
 
@@ -42,12 +43,42 @@ function App() {
       return
     }
     if (state.isPlayerTurn) return
-    setTimeout(() => dispatch({ type: 'ai played' }), config.aiPlayDelay)
-  }, [state.isPlayerTurn, isGameFinished, hasAiCards, hasPlayerCards])
+    setTimeout(() => dispatch({ type: 'ai played' }), state.config.aiPlayDelay)
+  }, [
+    state.config.aiPlayDelay,
+    state.isPlayerTurn,
+    isGameFinished,
+    hasPlayerCards,
+    hasAiCards,
+  ])
 
   return (
     <div>
-      <p>Sumá {config.targetValue}</p>
+      <p>Sumá {state.config.targetValue}</p>
+      <button
+        className="configBtn"
+        onClick={() => setIsConfigVisible((s) => !s)}
+        title="Configuración"
+        type="button"
+      >
+        <span className="visuallyHidden">Configuración</span>⚙️
+      </button>
+
+      {isConfigVisible && (
+        <ConfigForm
+          currentConfig={state.config}
+          onSubmit={(newConfig) =>
+            dispatch({
+              type: 'config updated',
+              payload: {
+                shuffledStack: utils.getShuffledStack(newConfig.availableCards),
+                newConfig,
+              },
+            })
+          }
+          onClose={() => setIsConfigVisible(false)}
+        />
+      )}
 
       <div className="aiContainer">
         <div className="cardsStack">
@@ -104,7 +135,10 @@ function App() {
             <button
               className="large"
               onClick={() =>
-                dispatch({ type: 'reset', payload: utils.getShuffledStack() })
+                dispatch({
+                  type: 'reset',
+                  payload: utils.getShuffledStack(state.config.availableCards),
+                })
               }
               type="button"
             >

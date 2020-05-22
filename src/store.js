@@ -1,7 +1,7 @@
-import * as config from './config'
+import * as defaults from './defaults'
 import * as utils from './utils'
 
-export function init(shuffledStack) {
+export function init(shuffledStack, config = defaults) {
   if (
     config.tableCardsAmount + 2 * config.playerCardsAmount >
     config.availableCards.length
@@ -33,6 +33,7 @@ export function init(shuffledStack) {
 
     isPlayerTurn: true,
     message: null,
+    config,
   }
 }
 
@@ -40,7 +41,13 @@ export function reducer(state, action) {
   console.log(action.type)
   switch (action.type) {
     case 'reset':
-      return init(action.payload)
+      return init(action.payload, state.config)
+
+    case 'config updated':
+      return init(action.payload.shuffledStack, {
+        ...state.config,
+        ...action.payload.newConfig,
+      })
 
     case 'player card selected':
       return { ...state, selectedPlayerCard: action.payload, message: null }
@@ -74,12 +81,12 @@ export function reducer(state, action) {
         state.selectedTableCards.reduce(
           (acc, current) => acc + state.tableCards[current],
           state.playerCards[state.selectedPlayerCard]
-        ) === config.targetValue
+        ) === state.config.targetValue
 
       if (!isValidPlay) {
         return {
           ...state,
-          message: `Las cartas elegidas no suman ${config.targetValue}!`,
+          message: `Las cartas elegidas no suman ${state.config.targetValue}!`,
         }
       }
 
@@ -143,11 +150,11 @@ export function reducer(state, action) {
     case 'cards requested':
       return {
         ...state,
-        playerCards: state.stackCards.slice(0, config.playerCardsAmount),
-        stackCards: state.stackCards.slice(2 * config.playerCardsAmount),
+        playerCards: state.stackCards.slice(0, state.config.playerCardsAmount),
+        stackCards: state.stackCards.slice(2 * state.config.playerCardsAmount),
         aiCards: state.stackCards.slice(
-          config.playerCardsAmount,
-          2 * config.playerCardsAmount
+          state.config.playerCardsAmount,
+          2 * state.config.playerCardsAmount
         ),
       }
 
