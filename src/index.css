@@ -29,6 +29,7 @@ body {
 
 .table {
   display: flex;
+  flex-wrap: wrap;
   justify-content: center;
   background: rgba(66, 66, 66, 0.2);
   border-radius: 1vw;
@@ -36,6 +37,11 @@ body {
   padding: 2vw 1vw;
   margin: 3vh 0;
   min-height: calc(4vw + 15vh);
+}
+
+.table .card {
+  margin-top: 1vh;
+  margin-bottom: 1vh;
 }
 
 .cardsStack {
