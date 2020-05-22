@@ -28,12 +28,13 @@ body {
 }
 
 .table {
+  display: flex;
+  justify-content: center;
   background: rgba(66, 66, 66, 0.2);
   border-radius: 1vw;
   box-shadow: 0 2px 9px -3px #000000b5 inset;
   padding: 2vw 1vw;
   margin: 3vh 0;
-  text-align: center;
   min-height: calc(4vw + 15vh);
 }
 
@@ -65,6 +66,7 @@ body {
 }
 
 .card {
+  position: relative;
   background: rgb(250, 250, 250);
   font-family: sans-serif;
   color: rgb(102, 102, 102);
@@ -72,11 +74,11 @@ body {
   transition: transform 300ms;
 }
 
-.card:hover {
+.card:not([disabled]):hover {
   background-color: rgb(232, 232, 232);
 }
 
-.card.isSelected {
+.card.isSelected.isSelected {
   background-color: rgb(251, 233, 146);
   border-color: rgb(251, 192, 146);
   transform: translateY(-10px);
@@ -86,6 +88,51 @@ body {
 .card:focus {
   outline: none;
   border-color: rgb(78, 76, 93);
+}
+
+.cardType-image {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0 0.5vh;
+}
+
+.cardType-image .cardNumber {
+  font-size: 2.5vh;
+  position: absolute;
+  top: 0.5vh;
+  left: 0.5vh;
+  display: block;
+  line-height: 2.5vh;
+}
+
+.cardType-image svg {
+  height: 2.5vmin;
+  width: 2.5vmin;
+  margin: 0.5vmin;
+}
+
+.cardType-image.isDense svg {
+  height: 2.2vmin;
+  width: 2.2vmin;
+  margin: 0.9vmin 0.2vmin -0.4vmin;
+}
+
+.fieldContainer .card {
+  margin: 0;
+}
+
+.fieldContainer .card.isSelected {
+  transform: none;
+}
+
+.cardTypesContainer {
+  margin-top: 0.25em;
+  display: flex;
+}
+
+.cardTypesContainer label + label {
+  margin-left: 1em;
 }
 
 .controls {
@@ -188,7 +235,8 @@ form h2 {
   margin-top: 1em;
 }
 
-label {
+label,
+.label {
   font-weight: normal;
   display: block;
   color: white;

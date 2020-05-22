@@ -2,6 +2,7 @@ export const aiPlayDelay = 1200
 export const targetValue = 10
 export const playerCardsAmount = 3
 export const tableCardsAmount = 4
+export const cardType = 'image'
 export const availableCards = [
   1,
   1,

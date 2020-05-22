@@ -99,6 +99,7 @@ function App() {
               dispatch({ type: 'table card selected', payload: i })
             }
             value={card}
+            type={state.config.cardType}
             key={`tableCard-${i}-${card}`}
           />
         ))}
@@ -126,6 +127,7 @@ function App() {
                 dispatch({ type: 'player card selected', payload: i })
               }
               value={card}
+              type={state.config.cardType}
               key={`playerCard-${i}-${card}`}
             />
           ))}
