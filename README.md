@@ -1,4 +1,8 @@
-Un simple juego de Escoba configurable para usar en ámbitos educativos.
+# Escobapp
+
+![Node.js CI](https://github.com/pablen/escobapp/workflows/Node.js%20CI/badge.svg?branch=master)
+
+Un simple juego de Escoba para usar en ámbitos educativos.
 
 Permite configurar:
 
