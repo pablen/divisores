@@ -8,7 +8,6 @@
     "standard",
     "plugin:import/recommended",
     "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
     "react-app",
     "prettier"
   ],
@@ -30,6 +29,8 @@
     "react/no-typos": ["error"],
     "react/button-has-type": ["warn"],
     "react/no-unused-prop-types": ["warn"],
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "arrow-body-style": ["warn", "as-needed"],
     "no-shadow": ["error", { "allow": ["status"] }]
   }
