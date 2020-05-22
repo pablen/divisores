@@ -36,7 +36,7 @@ body {
   box-shadow: 0 2px 9px -3px #000000b5 inset;
   padding: 2vw 1vw;
   margin: 3vh 0;
-  min-height: calc(4vw + 15vh);
+  min-height: calc(4vw + 17vh);
 }
 
 .table .card {

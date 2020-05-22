@@ -1,3 +1,5 @@
+import combinations from 'combinations'
+
 import * as defaults from './defaults'
 
 export function getShuffledStack(availableCards = defaults.availableCards) {
@@ -11,9 +13,22 @@ export function getShuffledStack(availableCards = defaults.availableCards) {
  *   y el resto son los índices de las cartas de la mesa que forman parte de la jugada
  */
 export function getBestPlay(playerCards, tableCards, targetValue) {
-  const sum = tableCards.reduce((acc, curr) => acc + curr, 0)
-  const cardIndex = playerCards.indexOf(targetValue - sum)
-  return cardIndex > -1
-    ? [cardIndex, ...tableCards.keys()]
-    : [Math.floor(Math.random() * playerCards.length)]
+  const sortedCombinations = combinations(
+    tableCards.map((value, index) => ({ index, value }))
+  ).sort((a, b) => b.length - a.length)
+
+  for (let i = 0; i < sortedCombinations.length; i++) {
+    const requiredCardValue =
+      targetValue -
+      sortedCombinations[i].reduce((acc, { value }) => acc + value, 0)
+
+    const requiredCardIndex = playerCards.indexOf(requiredCardValue)
+
+    if (requiredCardIndex > -1) {
+      const tableCardsIndexes = sortedCombinations[i].map(({ index }) => index)
+      return [requiredCardIndex, ...tableCardsIndexes]
+    }
+  }
+
+  return [playerCards.indexOf(Math.max(...playerCards))]
 }

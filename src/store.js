@@ -114,7 +114,8 @@ export function reducer(state, action) {
     case 'ai played': {
       const [cardIndex, ...tableIndixes] = utils.getBestPlay(
         state.aiCards,
-        state.tableCards
+        state.tableCards,
+        state.config.targetValue
       )
 
       if (tableIndixes.length === 0) {
