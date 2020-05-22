@@ -1,0 +1,4 @@
+{
+  "*.js": ["eslint --max-warnings=0 --cache"],
+  "*.{js,css,md}": "prettier --write"
+}
