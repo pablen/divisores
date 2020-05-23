@@ -1,31 +1,33 @@
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Apple from './Apple'
+import Figures from './Figures'
+import styles from './Card.module.css'
 
 export default function Card({ isDisabled, isSelected, onClick, value, type }) {
   const actualType = value > 10 ? 'number' : type || 'image'
+  const className = [styles.container, styles[`type-${actualType}`]].join(' ')
 
-  return (
-    <button
-      className={`card ${isSelected ? 'isSelected' : ''} ${
-        type === 'image' && value > 6 ? 'isDense' : ''
-      } cardType-${actualType}`}
-      disabled={isDisabled}
-      onClick={onClick}
-      type="button"
-    >
-      <span className="cardNumber">{value}</span>
-      {actualType === 'image' &&
-        [...new Array(value).keys()].map((v, i) => <Apple key={i} />)}
-    </button>
+  return React.createElement(
+    onClick ? 'button' : 'div',
+    onClick
+      ? {
+          'aria-selected': isSelected,
+          className,
+          disabled: isDisabled,
+          onClick,
+          type: 'button',
+        }
+      : { className, 'aria-selected': isSelected },
+    <span className={styles.number}>{value}</span>,
+    actualType === 'image' && <Figures value={value} />
   )
 }
 
 Card.propTypes = {
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
   value: PropTypes.number.isRequired,
   type: PropTypes.oneOf(['number', 'image']),
 }

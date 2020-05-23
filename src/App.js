@@ -101,7 +101,7 @@ function App() {
         {state.tableCards.map((card, i) => (
           <Card
             isSelected={state.selectedTableCards.includes(i)}
-            isDisabled={!state.isPlayerTurn}
+            isDisabled={isGameFinished || !state.isPlayerTurn}
             onClick={() =>
               dispatch({ type: 'table card selected', payload: i })
             }
