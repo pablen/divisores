@@ -1,7 +1,7 @@
-import * as defaults from './defaults'
+import { defaultConfig } from './config'
 import * as utils from './utils'
 
-export function init({ shuffledStack, isPlayerTurn }, config = defaults) {
+export function init({ shuffledStack, isPlayerTurn }, config = defaultConfig) {
   if (
     config.tableCardsAmount + 2 * config.playerCardsAmount >
     config.availableCards.length

@@ -1,6 +1,8 @@
 import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 
+import presets from '../presets'
+import styles from './ConfigForm.module.css'
 import Card from './Card'
 
 export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
@@ -19,6 +21,15 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   const [targetValue, setTargetValue] = useState(currentConfig.targetValue)
 
   const [cardType, setCardType] = useState(currentConfig.cardType)
+
+  const handlePreset = useCallback((e) => {
+    const { options } = presets[e.target.dataset.presetId]
+    setPlayerCardsAmount(options.playerCardsAmount)
+    setTableCardsAmount(options.tableCardsAmount)
+    setAvailableCards(options.availableCards.join(', '))
+    setTargetValue(options.targetValue)
+    setCardType(options.cardType)
+  }, [])
 
   const handleSubmit = useCallback(
     (e) => {
@@ -62,11 +73,30 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   )
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div className="configContainer">
-        <h2>Configuración</h2>
-        <div className="fieldContainer">
-          <label htmlFor="targetValue">Escoba del:</label>
+    <form className={styles.container} onSubmit={handleSubmit}>
+      <div className={styles.wrapper}>
+        <h2 className={styles.title}>Configuración</h2>
+
+        <div className={styles.field}>
+          <div className={styles.label}>Cargar preset:</div>
+          <div className={styles.presetRow}>
+            {Object.keys(presets).map((id) => (
+              <button
+                data-preset-id={id}
+                onClick={handlePreset}
+                type="button"
+                key={`preset-${id}`}
+              >
+                {presets[id].label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="targetValue">
+            Escoba del:
+          </label>
           <input
             onChange={(e) =>
               setTargetValue(
@@ -81,8 +111,8 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           />
         </div>
 
-        <div className="fieldContainer">
-          <label htmlFor="playerCardsAmount">
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="playerCardsAmount">
             Cantidad de cartas por jugador:
           </label>
           <input
@@ -99,8 +129,8 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           />
         </div>
 
-        <div className="fieldContainer">
-          <label htmlFor="tableCardsAmount">
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="tableCardsAmount">
             Cantidad de cartas en la mesa:
           </label>
           <input
@@ -117,10 +147,10 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           />
         </div>
 
-        <div className="fieldContainer">
-          <div className="label">Tipo de carta:</div>
-          <div className="cardTypesContainer">
-            <label htmlFor="cardType-image">
+        <div className={styles.field}>
+          <div className={styles.label}>Tipo de carta:</div>
+          <div className={styles.cardTypesContainer}>
+            <label className={styles.label} htmlFor="cardType-image">
               <input
                 className="visuallyHidden"
                 onChange={() => setCardType('image')}
@@ -138,7 +168,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               />
               <span className="visuallyHidden">Dibujos</span>
             </label>
-            <label htmlFor="cardType-number">
+            <label className={styles.label} htmlFor="cardType-number">
               <input
                 className="visuallyHidden"
                 onChange={(e) => setCardType(e.target.value)}
@@ -159,8 +189,10 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           </div>
         </div>
 
-        <div className="fieldContainer">
-          <label htmlFor="availableCards">Cartas del mazo:</label>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="availableCards">
+            Cartas del mazo:
+          </label>
           <textarea
             onChange={(e) => setAvailableCards(e.target.value)}
             required
@@ -171,7 +203,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
 
         {message && <p>{message}</p>}
 
-        <div className="formControls">
+        <div className={styles.controls}>
           <button type="submit">Guardar</button>
           <button type="button" onClick={onClose}>
             Cancelar

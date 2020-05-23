@@ -1,8 +1,10 @@
 import combinations from 'combinations'
 
-import * as defaults from './defaults'
+import { defaultConfig } from './config'
 
-export function getShuffledStack(availableCards = defaults.availableCards) {
+export function getShuffledStack(
+  availableCards = defaultConfig.availableCards
+) {
   return [...availableCards].sort(() => Math.random() * 2 - 1)
 }
 

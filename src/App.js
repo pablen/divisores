@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useState } from 'react'
 
 import { init, reducer } from './store'
+import * as config from './config'
 import ConfigForm from './components/ConfigForm'
 import * as utils from './utils'
 import Card from './components/Card'
@@ -50,7 +51,7 @@ function App() {
       return
     }
     if (state.isPlayerTurn) return
-    setTimeout(() => dispatch({ type: 'ai played' }), state.config.aiPlayDelay)
+    setTimeout(() => dispatch({ type: 'ai played' }), config.aiPlayDelay)
   }, [
     state.config.aiPlayDelay,
     state.isPlayerTurn,
