@@ -11,6 +11,7 @@ Permite configurar:
 - Cantidad de cartas en la mesa
 - Cantidad de cartas por jugador
 - Cartas que conforman el mazo (cuáles y qué cantidad de cada una)
+- Pausar cuando juega la máquina o no
 
 ## LICENCIA
 

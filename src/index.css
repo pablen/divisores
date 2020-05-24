@@ -108,6 +108,7 @@ body {
   display: flex;
   justify-content: center;
   margin-top: 1em;
+  border-radius: 0.5em;
 }
 
 .controls button {
@@ -148,8 +149,34 @@ body {
 
 .message {
   text-align: center;
-  line-height: 1.5;
-  min-height: 1.5em;
+  line-height: 2;
+  min-height: 2.2em;
   margin-bottom: 1em;
   color: rgb(255, 255, 255);
+}
+
+.message button {
+  color: rgb(255, 255, 255);
+  font: inherit;
+  font-size: 0.75em;
+  line-height: 1;
+  margin: 0 1em;
+  padding: 0.75em 1.5em;
+  background: rgba(255, 255, 255, 0.23);
+  border-radius: 0.5em;
+  border: 0.06em solid rgba(0, 0, 0, 0);
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  outline: none;
+  opacity: 0.9;
+}
+
+.message button:hover {
+  opacity: 1;
+}
+
+.message button:focus {
+  opacity: 1;
+  border-color: rgb(78, 76, 93);
 }

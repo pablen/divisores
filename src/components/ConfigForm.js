@@ -8,6 +8,9 @@ import Card from './Card'
 export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   const [message, setMessage] = useState(null)
 
+  const [pauseOnAiPlay, setPauseOnAiPlay] = useState(
+    currentConfig.pauseOnAiPlay
+  )
   const [playerCardsAmount, setPlayerCardsAmount] = useState(
     currentConfig.playerCardsAmount
   )
@@ -27,6 +30,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
     setPlayerCardsAmount(options.playerCardsAmount)
     setTableCardsAmount(options.tableCardsAmount)
     setAvailableCards(options.availableCards.join(', '))
+    setPauseOnAiPlay(options.pauseOnAiPlay)
     setTargetValue(options.targetValue)
     setCardType(options.cardType)
   }, [])
@@ -57,6 +61,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
         playerCardsAmount,
         tableCardsAmount,
         availableCards: parsedAvailableCards,
+        pauseOnAiPlay,
         targetValue,
         cardType,
       })
@@ -65,6 +70,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
       playerCardsAmount,
       tableCardsAmount,
       availableCards,
+      pauseOnAiPlay,
       targetValue,
       onSubmit,
       cardType,
@@ -148,6 +154,17 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
         </div>
 
         <div className={styles.field}>
+          <label className={styles.checkbox}>
+            <input
+              onChange={(e) => setPauseOnAiPlay(e.target.checked)}
+              checked={pauseOnAiPlay}
+              type="checkbox"
+            />{' '}
+            Pausar cuando juega la máquina
+          </label>
+        </div>
+
+        <div className={styles.field}>
           <div className={styles.label}>Tipo de carta:</div>
           <div className={styles.cardTypesContainer}>
             <label className={styles.label} htmlFor="cardType-image">
@@ -219,6 +236,7 @@ ConfigForm.propTypes = {
     playerCardsAmount: PropTypes.number.isRequired,
     tableCardsAmount: PropTypes.number.isRequired,
     availableCards: PropTypes.arrayOf(PropTypes.number).isRequired,
+    pauseOnAiPlay: PropTypes.bool.isRequired,
     targetValue: PropTypes.number.isRequired,
     cardType: PropTypes.oneOf(['number', 'image']).isRequired,
   }).isRequired,

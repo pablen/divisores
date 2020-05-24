@@ -43,16 +43,26 @@ function App() {
     state.selectedTableCards.length > 0
 
   useEffect(() => {
+    if (state.selectedAiCard !== null && !state.config.pauseOnAiPlay) {
+      setTimeout(() => dispatch({ type: 'ai played' }), 2 * config.aiPlayDelay)
+    }
+  }, [state.selectedAiCard, state.config.pauseOnAiPlay])
+
+  useEffect(() => {
     if (isGameFinished) return
     if (
       (state.isPlayerTurn && !hasPlayerCards) ||
       (!state.isPlayerTurn && !hasAiCards)
     ) {
-      dispatch({ type: 'cards requested' })
+      dispatch({ type: 'new cards requested' })
       return
     }
-    if (state.isPlayerTurn) return
-    setTimeout(() => dispatch({ type: 'ai played' }), config.aiPlayDelay)
+    if (!state.isPlayerTurn) {
+      setTimeout(
+        () => dispatch({ type: 'ai play requested' }),
+        config.aiPlayDelay
+      )
+    }
   }, [
     state.config.aiPlayDelay,
     state.isPlayerTurn,
@@ -91,11 +101,20 @@ function App() {
 
       <div className="aiContainer">
         <div className="cardsStack">
-          {state.aiCards.map((card, i) => (
-            <div className="reverseCard" key={`aiCard-${i}-${card}`}>
-              {card}
-            </div>
-          ))}
+          {state.aiCards.map((card, i) =>
+            state.selectedAiCard === i ? (
+              <Card
+                isSelected
+                value={card}
+                type={state.config.cardType}
+                key={`aiCard-${i}-${card}`}
+              />
+            ) : (
+              <div className="reverseCard" key={`aiCard-${i}-${card}`}>
+                {card}
+              </div>
+            )
+          )}
         </div>
       </div>
 
@@ -125,7 +144,27 @@ function App() {
             : state.message ||
               (state.isPlayerTurn
                 ? 'Tu Turno'
+                : state.selectedAiCard !== null
+                ? state.selectedTableCards.length === 0
+                  ? `La máquina se descarta un ${
+                      state.aiCards[state.selectedAiCard]
+                    }`
+                  : `La máquina juega ${[
+                      state.aiCards[state.selectedAiCard],
+                      ...state.selectedTableCards.map(
+                        (i) => state.tableCards[i]
+                      ),
+                    ].join(' + ')} = ${state.config.targetValue}`
                 : 'Esperando a que juege la máquina...')}
+
+          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
+            <button
+              type="button"
+              onClick={() => dispatch({ type: 'ai play accepted' })}
+            >
+              OK
+            </button>
+          )}
         </div>
 
         <div className="cardsStack">

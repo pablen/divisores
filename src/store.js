@@ -10,20 +10,24 @@ export function init({ shuffledStack, isPlayerTurn }, config = defaultConfig) {
   }
   return {
     playerCards: shuffledStack.slice(0, config.playerCardsAmount),
-    tableCards: shuffledStack.slice(
-      2 * config.playerCardsAmount,
-      2 * config.playerCardsAmount + config.tableCardsAmount
-    ),
-    stackCards: shuffledStack.slice(
-      2 * config.playerCardsAmount + config.tableCardsAmount
-    ),
+
     aiCards: shuffledStack.slice(
       config.playerCardsAmount,
       2 * config.playerCardsAmount
     ),
 
+    tableCards: shuffledStack.slice(
+      2 * config.playerCardsAmount,
+      2 * config.playerCardsAmount + config.tableCardsAmount
+    ),
+
+    stackCards: shuffledStack.slice(
+      2 * config.playerCardsAmount + config.tableCardsAmount
+    ),
+
     selectedTableCards: [],
     selectedPlayerCard: null,
+    selectedAiCard: null,
 
     playerStackLength: 0,
     aiStackLength: 0,
@@ -55,10 +59,7 @@ export function reducer(state, action) {
           shuffledStack: action.payload.shuffledStack,
           isPlayerTurn: action.payload.isPlayerTurn,
         },
-        {
-          ...state.config,
-          ...action.payload.newConfig,
-        }
+        { ...state.config, ...action.payload.newConfig }
       )
 
     case 'player card selected':
@@ -123,44 +124,53 @@ export function reducer(state, action) {
       }
     }
 
-    case 'ai played': {
+    case 'ai play requested': {
       const [cardIndex, ...tableIndixes] = utils.getBestPlay(
         state.aiCards,
         state.tableCards,
         state.config.targetValue
       )
 
-      if (tableIndixes.length === 0) {
-        console.log(`AI discarded a ${state.aiCards[cardIndex]}`)
+      return {
+        ...state,
+        selectedAiCard: cardIndex,
+        selectedTableCards: tableIndixes,
+      }
+    }
+
+    case 'ai play accepted':
+    case 'ai played': {
+      if (state.selectedTableCards.length === 0) {
         return {
           ...state,
+          selectedAiCard: null,
           isPlayerTurn: true,
-          tableCards: [...state.tableCards, state.aiCards[cardIndex]],
-          aiCards: state.aiCards.filter((_, i) => i !== cardIndex),
+          tableCards: [
+            ...state.tableCards,
+            state.aiCards[state.selectedAiCard],
+          ],
+          aiCards: state.aiCards.filter((_, i) => i !== state.selectedAiCard),
         }
       }
 
       const tableCards = state.tableCards.filter(
-        (_, i) => !tableIndixes.includes(i)
-      )
-
-      console.log(
-        `AI played a ${state.aiCards[cardIndex]} and took ${tableIndixes
-          .map((i) => state.tableCards[i])
-          .join(', ')}`
+        (_, i) => !state.selectedTableCards.includes(i)
       )
 
       return {
         ...state,
         isPlayerTurn: true,
+        selectedTableCards: [],
+        selectedAiCard: null,
         tableCards,
-        aiCards: state.aiCards.filter((_, i) => i !== cardIndex),
-        aiStackLength: state.aiStackLength + tableIndixes.length + 1,
+        aiCards: state.aiCards.filter((_, i) => i !== state.selectedAiCard),
+        aiStackLength:
+          state.aiStackLength + state.selectedTableCards.length + 1,
         aiSweeps: tableCards.length === 0 ? state.aiSweeps + 1 : state.aiSweeps,
       }
     }
 
-    case 'cards requested':
+    case 'new cards requested':
       return {
         ...state,
         playerCards: state.stackCards.slice(0, state.config.playerCardsAmount),

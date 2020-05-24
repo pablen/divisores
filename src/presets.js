@@ -9,6 +9,7 @@ export default {
       tableCardsAmount: 4,
       playerCardsAmount: 3,
       cardType: 'image',
+      pauseOnAiPlay: true,
     },
   },
 
@@ -22,6 +23,7 @@ export default {
       tableCardsAmount: 4,
       playerCardsAmount: 3,
       cardType: 'image',
+      pauseOnAiPlay: true,
     },
   },
 
@@ -35,6 +37,7 @@ export default {
       tableCardsAmount: 4,
       playerCardsAmount: 3,
       cardType: 'number',
+      pauseOnAiPlay: true,
     },
   },
 }
