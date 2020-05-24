@@ -153,18 +153,3 @@ body {
   margin-bottom: 1em;
   color: rgb(255, 255, 255);
 }
-
-table {
-  margin: 5vh auto;
-  color: rgb(255, 255, 255);
-  border-top: 1px solid rgba(255, 255, 255, 0.33);
-  padding-top: 1em;
-}
-
-th {
-  padding: 2px 1em;
-}
-
-td.center {
-  text-align: center;
-}

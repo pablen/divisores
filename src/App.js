@@ -3,6 +3,7 @@ import React, { useReducer, useEffect, useState } from 'react'
 import { init, reducer } from './store'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
+import ScoreBoard from './components/ScoreBoard'
 import * as utils from './utils'
 import Card from './components/Card'
 
@@ -126,6 +127,7 @@ function App() {
                 ? 'Tu Turno'
                 : 'Esperando a que juege la máquina...')}
         </div>
+
         <div className="cardsStack">
           {state.playerCards.map((card, i) => (
             <Card
@@ -140,6 +142,7 @@ function App() {
             />
           ))}
         </div>
+
         <div className="controls">
           {isGameFinished ? (
             <button
@@ -179,29 +182,12 @@ function App() {
           )}
         </div>
 
-        <table>
-          <thead>
-            <tr>
-              <th />
-              <th>Escobas</th>
-              <th>Cartas Acumuladas</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Vos</td>
-              <td className="center">{state.playerSweeps}</td>
-              <td className="center">{state.playerStackLength}</td>
-            </tr>
-            <tr>
-              <td>
-                <span className="visuallyHidden">Máquina</span>🤖
-              </td>
-              <td className="center">{state.aiSweeps}</td>
-              <td className="center">{state.aiStackLength}</td>
-            </tr>
-          </tbody>
-        </table>
+        <ScoreBoard
+          playerStackLength={state.playerStackLength}
+          aiStackLength={state.aiStackLength}
+          playerSweeps={state.playerSweeps}
+          aiSweeps={state.aiSweeps}
+        />
       </div>
 
       {/* {<hr />

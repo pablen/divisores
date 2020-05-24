@@ -1,0 +1,14 @@
+.container {
+  margin: 5vh auto;
+  color: rgb(255, 255, 255);
+  border-top: 1px solid rgba(255, 255, 255, 0.33);
+  padding-top: 1em;
+}
+
+.header {
+  padding: 2px 1em;
+}
+
+.center {
+  text-align: center;
+}
