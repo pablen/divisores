@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from 'react'
+import { Dialog } from '@reach/dialog'
 import PropTypes from 'prop-types'
 
 import { configPropTypes } from '../utils'
@@ -80,9 +81,15 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   )
 
   return (
-    <form className={styles.container} onSubmit={handleSubmit}>
-      <div className={styles.wrapper}>
-        <h2 className={styles.title}>Configuración</h2>
+    <Dialog
+      aria-labelledby="dialog-title"
+      className={styles.container}
+      onDismiss={onClose}
+    >
+      <form className={styles.wrapper} onSubmit={handleSubmit}>
+        <h2 className={styles.title} id="dialog-title">
+          Configuración
+        </h2>
 
         <div className={styles.field}>
           <div className={styles.label}>Cargar preset:</div>
@@ -227,8 +234,8 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
             Cancelar
           </button>
         </div>
-      </div>
-    </form>
+      </form>
+    </Dialog>
   )
 }
 
