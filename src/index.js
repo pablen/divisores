@@ -1,12 +1,12 @@
 import ReactDOM from 'react-dom'
 import React from 'react'
 
-import App from './App'
+import ConfigProvider from './ConfigProvider'
 import './index.css'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <ConfigProvider />
   </React.StrictMode>,
   document.getElementById('root')
 )

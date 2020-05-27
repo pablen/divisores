@@ -7,12 +7,21 @@ import ScoreBoard from './components/ScoreBoard'
 import * as utils from './utils'
 import Card from './components/Card'
 
-function App() {
+function Game({ initialConfig }) {
+  useEffect(() => {
+    console.log(
+      '%cInitial configuration',
+      'font-weight: bold; color: blue;',
+      initialConfig
+    )
+  }, [initialConfig])
+
   const [state, dispatch] = useReducer(
     reducer,
     {
-      shuffledStack: utils.getShuffledStack(),
+      shuffledStack: utils.getShuffledStack(initialConfig.availableCards),
       isPlayerTurn: utils.getRandomTurn(),
+      config: initialConfig,
     },
     init
   )
@@ -159,8 +168,8 @@ function App() {
 
           {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
             <button
-              type="button"
               onClick={() => dispatch({ type: 'ai play accepted' })}
+              type="button"
             >
               OK
             </button>
@@ -235,4 +244,8 @@ function App() {
   )
 }
 
-export default App
+Game.propTypes = {
+  initialConfig: utils.configPropTypes.isRequired,
+}
+
+export default Game

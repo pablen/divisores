@@ -1,9 +1,7 @@
+import { isDebugEnabled } from './config'
 import * as utils from './utils'
 
-export function init(
-  { shuffledStack, isPlayerTurn },
-  config = utils.initialConfig
-) {
+export function init({ shuffledStack, isPlayerTurn, config }) {
   if (
     config.tableCardsAmount + 2 * config.playerCardsAmount >
     config.availableCards.length
@@ -44,25 +42,27 @@ export function init(
 }
 
 export function reducer(state, action) {
-  console.log(action.type)
+  if (isDebugEnabled) {
+    console.groupCollapsed(action.type)
+    console.log('%cAction:', 'color: #00A7F7; font-weight: 700;', action)
+    console.log('%cPrevious State:', 'color: #9E9E9E; font-weight: 700;', state)
+    console.groupEnd()
+  }
+
   switch (action.type) {
     case 'reset':
-      return init(
-        {
-          shuffledStack: action.payload.shuffledStack,
-          isPlayerTurn: action.payload.isPlayerTurn,
-        },
-        state.config
-      )
+      return init({
+        shuffledStack: action.payload.shuffledStack,
+        isPlayerTurn: action.payload.isPlayerTurn,
+        config: state.config,
+      })
 
     case 'config updated':
-      return init(
-        {
-          shuffledStack: action.payload.shuffledStack,
-          isPlayerTurn: action.payload.isPlayerTurn,
-        },
-        { ...state.config, ...action.payload.newConfig }
-      )
+      return init({
+        shuffledStack: action.payload.shuffledStack,
+        isPlayerTurn: action.payload.isPlayerTurn,
+        config: { ...state.config, ...action.payload.newConfig },
+      })
 
     case 'player card selected':
       return { ...state, selectedPlayerCard: action.payload, message: null }

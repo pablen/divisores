@@ -1,6 +1,7 @@
 import React, { useCallback, useState } from 'react'
 import PropTypes from 'prop-types'
 
+import { configPropTypes } from '../utils'
 import presets from '../presets'
 import styles from './ConfigForm.module.css'
 import Card from './Card'
@@ -232,14 +233,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
 }
 
 ConfigForm.propTypes = {
-  currentConfig: PropTypes.shape({
-    playerCardsAmount: PropTypes.number.isRequired,
-    tableCardsAmount: PropTypes.number.isRequired,
-    availableCards: PropTypes.arrayOf(PropTypes.number).isRequired,
-    pauseOnAiPlay: PropTypes.bool.isRequired,
-    targetValue: PropTypes.number.isRequired,
-    cardType: PropTypes.oneOf(['number', 'image']).isRequired,
-  }).isRequired,
+  currentConfig: configPropTypes.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 }
