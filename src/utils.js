@@ -11,7 +11,9 @@ export const configPropTypes = PropTypes.shape({
 })
 
 export function getShuffledStack(availableCards) {
-  return [...availableCards].sort(() => Math.random() * 2 - 1)
+  return [...availableCards]
+    .sort(() => Math.random() * 2 - 1)
+    .map((value, i) => ({ value, id: `card-${i}` }))
 }
 
 export function getRandomTurn() {
@@ -26,7 +28,7 @@ export function getRandomTurn() {
  */
 export function getBestPlay(playerCards, tableCards, targetValue) {
   const sortedCombinations = combinations(
-    tableCards.map((value, index) => ({ index, value }))
+    tableCards.map(({ value }, index) => ({ index, value }))
   ).sort((a, b) => b.length - a.length)
 
   for (let i = 0; i < sortedCombinations.length; i++) {
@@ -34,7 +36,9 @@ export function getBestPlay(playerCards, tableCards, targetValue) {
       targetValue -
       sortedCombinations[i].reduce((acc, { value }) => acc + value, 0)
 
-    const requiredCardIndex = playerCards.indexOf(requiredCardValue)
+    const requiredCardIndex = playerCards.findIndex(
+      ({ value }) => value === requiredCardValue
+    )
 
     if (requiredCardIndex > -1) {
       const tableCardsIndexes = sortedCombinations[i].map(({ index }) => index)
@@ -42,5 +46,9 @@ export function getBestPlay(playerCards, tableCards, targetValue) {
     }
   }
 
-  return [playerCards.indexOf(Math.max(...playerCards))]
+  return [
+    playerCards.findIndex(
+      ({ value }) => value === Math.max(...playerCards.map((c) => c.value))
+    ),
+  ]
 }

@@ -8,7 +8,6 @@
   border-radius: 0.2em;
   line-height: 1;
   font-size: 5vh;
-  transition: transform 300ms;
   text-align: center;
 
   /* real playing cards size is 62mm x 88mm */
@@ -44,7 +43,6 @@ button.container:not([disabled]):hover {
 .container.container.container[aria-selected='true'] {
   background-color: rgb(251, 233, 146);
   border-color: rgb(251, 192, 146);
-  transform: translateY(-10px);
 }
 
 .container[aria-selected='true']:focus,

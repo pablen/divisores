@@ -94,8 +94,8 @@ export function reducer(state, action) {
     case 'play attempted': {
       const isValidPlay =
         state.selectedTableCards.reduce(
-          (acc, current) => acc + state.tableCards[current],
-          state.playerCards[state.selectedPlayerCard]
+          (acc, current) => acc + state.tableCards[current].value,
+          state.playerCards[state.selectedPlayerCard].value
         ) === state.config.targetValue
 
       if (!isValidPlay) {

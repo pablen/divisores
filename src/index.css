@@ -181,3 +181,8 @@ body {
   opacity: 1;
   border-color: rgb(78, 76, 93);
 }
+
+.mainStack > .reverseCard {
+  margin: 0;
+  position: absolute;
+}

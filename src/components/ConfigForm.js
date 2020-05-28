@@ -190,6 +190,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 onClick={() => setCardType('image')}
                 value={5}
                 type="image"
+                id="image-icon"
               />
               <span className="visuallyHidden">Dibujos</span>
             </label>
@@ -208,6 +209,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 onClick={() => setCardType('number')}
                 value={5}
                 type="number"
+                id="number-icon"
               />
               <span className="visuallyHidden">Número</span>
             </label>

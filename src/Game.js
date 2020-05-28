@@ -1,4 +1,5 @@
 import React, { useReducer, useEffect, useState } from 'react'
+import { AnimateSharedLayout, motion } from 'framer-motion'
 
 import { init, reducer } from './store'
 import RulesDialog from './components/RulesDialog'
@@ -65,7 +66,10 @@ function Game({ initialConfig }) {
       (state.isPlayerTurn && !hasPlayerCards) ||
       (!state.isPlayerTurn && !hasAiCards)
     ) {
-      dispatch({ type: 'new cards requested' })
+      setTimeout(
+        () => dispatch({ type: 'new cards requested' }),
+        config.aiPlayDelay
+      )
       return
     }
     if (!state.isPlayerTurn && !isRulesVisible) {
@@ -117,135 +121,156 @@ function Game({ initialConfig }) {
         />
       )}
 
-      <div className="aiContainer">
-        <div className="cardsStack">
-          {state.aiCards.map((card, i) =>
-            state.selectedAiCard === i ? (
-              <Card
-                isSelected
-                value={card}
-                type={state.config.cardType}
-                key={`aiCard-${i}-${card}`}
-              />
-            ) : (
-              <div className="reverseCard" key={`aiCard-${i}-${card}`}>
-                {card}
-              </div>
-            )
-          )}
+      <AnimateSharedLayout>
+        <div className="aiContainer">
+          <div className="cardsStack">
+            {state.aiCards.map((card, i) =>
+              state.selectedAiCard === i ? (
+                <Card
+                  isSelected
+                  value={card.value}
+                  type={state.config.cardType}
+                  key={`aiCard-${card.id}`}
+                  id={card.id}
+                />
+              ) : (
+                <motion.div
+                  className="reverseCard"
+                  layoutId={card.id}
+                  key={`aiCard-${card.id}`}
+                >
+                  {card.value}
+                </motion.div>
+              )
+            )}
+          </div>
         </div>
-      </div>
 
-      <div className="table">
-        {state.tableCards.map((card, i) => (
-          <Card
-            isSelected={state.selectedTableCards.includes(i)}
-            isDisabled={isGameFinished || !state.isPlayerTurn}
-            onClick={() =>
-              dispatch({ type: 'table card selected', payload: i })
-            }
-            value={card}
-            type={state.config.cardType}
-            key={`tableCard-${i}-${card}`}
-          />
-        ))}
-      </div>
-
-      <div className="playerContainer">
-        <div className="message">
-          {isGameFinished
-            ? playerPoints > aiPoints
-              ? 'Ganaste 😎'
-              : playerPoints < aiPoints
-              ? 'Perdiste 😭'
-              : 'Empate 😐'
-            : state.message ||
-              (state.isPlayerTurn
-                ? 'Tu Turno'
-                : state.selectedAiCard !== null
-                ? state.selectedTableCards.length === 0
-                  ? `La máquina se descarta un ${
-                      state.aiCards[state.selectedAiCard]
-                    }`
-                  : `La máquina juega ${[
-                      state.aiCards[state.selectedAiCard],
-                      ...state.selectedTableCards.map(
-                        (i) => state.tableCards[i]
-                      ),
-                    ].join(' + ')} = ${state.config.targetValue}`
-                : 'Esperando a que juege la máquina...')}
-
-          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-            <button
-              onClick={() => dispatch({ type: 'ai play accepted' })}
-              type="button"
+        <div className="mainStack">
+          {state.stackCards.map((card, i) => (
+            <motion.div
+              className="reverseCard"
+              layoutId={card.id}
+              key={`aiCard-${card.id}`}
             >
-              OK
-            </button>
-          )}
+              {card.value}
+            </motion.div>
+          ))}
         </div>
 
-        <div className="cardsStack">
-          {state.playerCards.map((card, i) => (
+        <div className="table">
+          {state.tableCards.map((card, i) => (
             <Card
-              isSelected={state.selectedPlayerCard === i}
-              isDisabled={!state.isPlayerTurn}
+              isSelected={state.selectedTableCards.includes(i)}
+              isDisabled={isGameFinished || !state.isPlayerTurn}
               onClick={() =>
-                dispatch({ type: 'player card selected', payload: i })
+                dispatch({ type: 'table card selected', payload: i })
               }
-              value={card}
+              value={card.value}
               type={state.config.cardType}
-              key={`playerCard-${i}-${card}`}
+              key={`tableCard-${card.id}`}
+              id={card.id}
             />
           ))}
         </div>
 
-        <div className="controls">
-          {isGameFinished ? (
-            <button
-              className="large"
-              onClick={() =>
-                dispatch({
-                  type: 'reset',
-                  payload: {
-                    shuffledStack: utils.getShuffledStack(
-                      state.config.availableCards
-                    ),
-                    isPlayerTurn: utils.getRandomTurn(),
-                  },
-                })
-              }
-              type="button"
-            >
-              Jugar De Nuevo
-            </button>
-          ) : (
-            <>
-              <button
-                disabled={!canPlay}
-                onClick={() => dispatch({ type: 'play attempted' })}
-                type="button"
-              >
-                Jugar
-              </button>
-              <button
-                disabled={!canDiscard}
-                onClick={() => dispatch({ type: 'player card discarded' })}
-                type="button"
-              >
-                Descartar
-              </button>
-            </>
-          )}
-        </div>
+        <div className="playerContainer">
+          <div className="message">
+            {isGameFinished
+              ? playerPoints > aiPoints
+                ? 'Ganaste 😎'
+                : playerPoints < aiPoints
+                ? 'Perdiste 😭'
+                : 'Empate 😐'
+              : state.message ||
+                (state.isPlayerTurn
+                  ? 'Tu Turno'
+                  : state.selectedAiCard !== null
+                  ? state.selectedTableCards.length === 0
+                    ? `La máquina se descarta un ${
+                        state.aiCards[state.selectedAiCard].value
+                      }`
+                    : `La máquina juega ${[
+                        state.aiCards[state.selectedAiCard].value,
+                        ...state.selectedTableCards.map(
+                          (i) => state.tableCards[i].value
+                        ),
+                      ].join(' + ')} = ${state.config.targetValue}`
+                  : 'Esperando a que juege la máquina...')}
 
-        <ScoreBoard
-          playerStackLength={state.playerStackLength}
-          aiStackLength={state.aiStackLength}
-          playerSweeps={state.playerSweeps}
-          aiSweeps={state.aiSweeps}
-        />
-      </div>
+            {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
+              <button
+                onClick={() => dispatch({ type: 'ai play accepted' })}
+                type="button"
+              >
+                OK
+              </button>
+            )}
+          </div>
+
+          <div className="cardsStack">
+            {state.playerCards.map((card, i) => (
+              <Card
+                isSelected={state.selectedPlayerCard === i}
+                isDisabled={!state.isPlayerTurn}
+                onClick={() =>
+                  dispatch({ type: 'player card selected', payload: i })
+                }
+                value={card.value}
+                type={state.config.cardType}
+                key={`playerCard-${card.id}`}
+                id={card.id}
+              />
+            ))}
+          </div>
+
+          <div className="controls">
+            {isGameFinished ? (
+              <button
+                className="large"
+                onClick={() =>
+                  dispatch({
+                    type: 'reset',
+                    payload: {
+                      shuffledStack: utils.getShuffledStack(
+                        state.config.availableCards
+                      ),
+                      isPlayerTurn: utils.getRandomTurn(),
+                    },
+                  })
+                }
+                type="button"
+              >
+                Jugar De Nuevo
+              </button>
+            ) : (
+              <>
+                <button
+                  disabled={!canPlay}
+                  onClick={() => dispatch({ type: 'play attempted' })}
+                  type="button"
+                >
+                  Jugar
+                </button>
+                <button
+                  disabled={!canDiscard}
+                  onClick={() => dispatch({ type: 'player card discarded' })}
+                  type="button"
+                >
+                  Descartar
+                </button>
+              </>
+            )}
+          </div>
+
+          <ScoreBoard
+            playerStackLength={state.playerStackLength}
+            aiStackLength={state.aiStackLength}
+            playerSweeps={state.playerSweeps}
+            aiSweeps={state.aiSweeps}
+          />
+        </div>
+      </AnimateSharedLayout>
 
       {/* {<hr />
       <pre>{JSON.stringify(state, null, 2)}</pre>} */}
