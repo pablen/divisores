@@ -96,7 +96,10 @@ export default function ConfigProvider() {
   }, [])
 
   return initialConfig ? (
-    <Game initialConfig={initialConfig} />
+    <Game
+      initialConfig={initialConfig}
+      showRules={window.localStorage.getItem('showRules') !== 'false'}
+    />
   ) : (
     'Cargando la configuración de la sala...'
   )

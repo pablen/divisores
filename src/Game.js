@@ -1,5 +1,6 @@
 import React, { useReducer, useEffect, useState } from 'react'
 import { AnimateSharedLayout, motion } from 'framer-motion'
+import PropTypes from 'prop-types'
 
 import { init, reducer } from './store'
 import RulesDialog from './components/RulesDialog'
@@ -9,7 +10,7 @@ import ScoreBoard from './components/ScoreBoard'
 import * as utils from './utils'
 import Card from './components/Card'
 
-function Game({ initialConfig }) {
+function Game({ initialConfig, showRules }) {
   useEffect(() => {
     console.log(
       '%cInitial configuration',
@@ -28,7 +29,7 @@ function Game({ initialConfig }) {
     init
   )
   const [isConfigVisible, setIsConfigVisible] = useState(false)
-  const [isRulesVisible, setIsRulesVisible] = useState(true)
+  const [isRulesVisible, setIsRulesVisible] = useState(showRules)
 
   const hasStackEnoughCards =
     state.stackCards.length >= 2 * state.config.playerCardsAmount
@@ -294,15 +295,13 @@ function Game({ initialConfig }) {
           />
         </div>
       </AnimateSharedLayout>
-
-      {/* {<hr />
-      <pre>{JSON.stringify(state, null, 2)}</pre>} */}
     </div>
   )
 }
 
 Game.propTypes = {
   initialConfig: utils.configPropTypes.isRequired,
+  showRules: PropTypes.bool.isRequired,
 }
 
 export default Game

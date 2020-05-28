@@ -1,12 +1,20 @@
+import React, { useState, useCallback } from 'react'
 import { Dialog } from '@reach/dialog'
 import PropTypes from 'prop-types'
-import React from 'react'
 
 import { configPropTypes } from '../utils'
 import styles from './RulesDialog.module.css'
-// import Card from './Card'
 
 export default function RulesDialog({ onClose, currentConfig }) {
+  const [doNotShowAgain, setDoNotShowAgain] = useState(false)
+
+  const handleStart = useCallback(() => {
+    if (doNotShowAgain) {
+      window.localStorage.setItem('showRules', 'false')
+    }
+    onClose()
+  }, [doNotShowAgain, onClose])
+
   return (
     <Dialog
       aria-labelledby="dialog-title"
@@ -42,8 +50,16 @@ export default function RulesDialog({ onClose, currentConfig }) {
         <p>
           <strong>1 punto al que tiene más cartas.</strong>
         </p>
+        <label className={styles.doNotShowAgain}>
+          <input
+            onChange={(e) => setDoNotShowAgain(e.target.checked)}
+            checked={doNotShowAgain}
+            type="checkbox"
+          />
+          No volver a mostrar
+        </label>
         <div className={styles.controls}>
-          <button type="button" onClick={onClose} autoFocus>
+          <button type="button" onClick={handleStart} autoFocus>
             ¡EMPEZAR!
           </button>
         </div>
