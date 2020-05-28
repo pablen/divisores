@@ -1,5 +1,12 @@
 # Registro de cambios
 
+## `v1.3.0`
+
+- Soporte para distintas configuraciones iniciales a través de parámetros de URL
+- Soporte para carga de configuraciones iniciales externas
+- Se muestra un cuadro con las reglas del juego al iniciar la aplicación
+- El cuadro de configuración es ahora una ventana modal
+
 ## `v1.2.0`
 
 - Se muestra el detalle de la jugada en el turno de la máquina
