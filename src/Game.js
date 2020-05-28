@@ -40,10 +40,11 @@ function Game({ initialConfig }) {
   const isGameFinished = !hasPlayerCards && !hasAiCards && !hasStackEnoughCards
 
   const playerPoints =
-    state.playerSweeps + (state.playerStackLength > state.aiStackLength ? 1 : 0)
+    state.playerSweeps +
+    (state.playerStack.length > state.aiStack.length ? 1 : 0)
 
   const aiPoints =
-    state.aiSweeps + (state.aiStackLength > state.playerStackLength ? 1 : 0)
+    state.aiSweeps + (state.aiStack.length > state.playerStack.length ? 1 : 0)
 
   const canDiscard =
     !isGameFinished && state.isPlayerTurn && state.selectedPlayerCard !== null
@@ -124,52 +125,63 @@ function Game({ initialConfig }) {
       <AnimateSharedLayout>
         <div className="aiContainer">
           <div className="cardsStack">
-            {state.aiCards.map((card, i) =>
-              state.selectedAiCard === i ? (
+            {state.aiCards.map((card) =>
+              state.selectedAiCard === card ? (
                 <Card
                   isSelected
-                  value={card.value}
+                  value={state.shuffledStack[card]}
                   type={state.config.cardType}
-                  key={`aiCard-${card.id}`}
-                  id={card.id}
+                  key={`card-${card}`}
+                  id={`card-${card}`}
                 />
               ) : (
                 <motion.div
                   className="reverseCard"
-                  layoutId={card.id}
-                  key={`aiCard-${card.id}`}
+                  layoutId={`card-${card}`}
+                  key={`card-${card}`}
                 >
-                  {card.value}
+                  {state.shuffledStack[card]}
                 </motion.div>
               )
             )}
           </div>
+          <div className="mainStack" style={{ float: 'right' }}>
+            {state.aiStack.map((card) => (
+              <motion.div
+                className="reverseCard"
+                layoutId={`card-${card}`}
+                key={`card-${card}`}
+              >
+                {state.shuffledStack[card]}
+              </motion.div>
+            ))}
+          </div>
         </div>
 
         <div className="mainStack">
-          {state.stackCards.map((card, i) => (
+          {state.stackCards.map((card) => (
             <motion.div
               className="reverseCard"
-              layoutId={card.id}
-              key={`aiCard-${card.id}`}
+              layoutId={`card-${card}`}
+              key={`card-${card}`}
             >
-              {card.value}
+              {state.shuffledStack[card]}
             </motion.div>
           ))}
         </div>
 
         <div className="table">
-          {state.tableCards.map((card, i) => (
+          {state.tableCards.map((card) => (
             <Card
-              isSelected={state.selectedTableCards.includes(i)}
+              isSelected={state.selectedTableCards.includes(card)}
               isDisabled={isGameFinished || !state.isPlayerTurn}
               onClick={() =>
-                dispatch({ type: 'table card selected', payload: i })
+                dispatch({ type: 'table card selected', payload: card })
               }
-              value={card.value}
+              value={state.shuffledStack[card]}
               type={state.config.cardType}
-              key={`tableCard-${card.id}`}
-              id={card.id}
+              key={`card-${card}`}
+              id={`card-${card}`}
             />
           ))}
         </div>
@@ -188,12 +200,12 @@ function Game({ initialConfig }) {
                   : state.selectedAiCard !== null
                   ? state.selectedTableCards.length === 0
                     ? `La máquina se descarta un ${
-                        state.aiCards[state.selectedAiCard].value
+                        state.shuffledStack[state.selectedAiCard]
                       }`
                     : `La máquina juega ${[
-                        state.aiCards[state.selectedAiCard].value,
+                        state.shuffledStack[state.selectedAiCard],
                         ...state.selectedTableCards.map(
-                          (i) => state.tableCards[i].value
+                          (i) => state.shuffledStack[i]
                         ),
                       ].join(' + ')} = ${state.config.targetValue}`
                   : 'Esperando a que juege la máquina...')}
@@ -209,18 +221,29 @@ function Game({ initialConfig }) {
           </div>
 
           <div className="cardsStack">
-            {state.playerCards.map((card, i) => (
+            {state.playerCards.map((card) => (
               <Card
-                isSelected={state.selectedPlayerCard === i}
+                isSelected={state.selectedPlayerCard === card}
                 isDisabled={!state.isPlayerTurn}
                 onClick={() =>
-                  dispatch({ type: 'player card selected', payload: i })
+                  dispatch({ type: 'player card selected', payload: card })
                 }
-                value={card.value}
+                value={state.shuffledStack[card]}
                 type={state.config.cardType}
-                key={`playerCard-${card.id}`}
-                id={card.id}
+                key={`card-${card}`}
+                id={`card-${card}`}
               />
+            ))}
+          </div>
+          <div className="mainStack" style={{ float: 'right' }}>
+            {state.playerStack.map((card) => (
+              <motion.div
+                className="reverseCard"
+                layoutId={`card-${card}`}
+                key={`card-${card}`}
+              >
+                {state.shuffledStack[card]}
+              </motion.div>
             ))}
           </div>
 
@@ -264,8 +287,8 @@ function Game({ initialConfig }) {
           </div>
 
           <ScoreBoard
-            playerStackLength={state.playerStackLength}
-            aiStackLength={state.aiStackLength}
+            playerStackLength={state.playerStack.length}
+            aiStackLength={state.aiStack.length}
             playerSweeps={state.playerSweeps}
             aiSweeps={state.aiSweeps}
           />

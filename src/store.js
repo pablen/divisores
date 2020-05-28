@@ -1,6 +1,8 @@
 import { isDebugEnabled } from './config'
 import * as utils from './utils'
 
+const range = (start, amount) => Array.from(Array(amount), (_, i) => i + start)
+
 export function init({ shuffledStack, isPlayerTurn, config }) {
   if (
     config.tableCardsAmount + 2 * config.playerCardsAmount >
@@ -9,28 +11,30 @@ export function init({ shuffledStack, isPlayerTurn, config }) {
     throw new Error('Insufficient cards in stack')
   }
   return {
-    playerCards: shuffledStack.slice(0, config.playerCardsAmount),
+    playerCards: range(0, config.playerCardsAmount),
+    tableCards: range(2 * config.playerCardsAmount, config.tableCardsAmount),
+    aiCards: range(config.playerCardsAmount, config.playerCardsAmount),
 
-    aiCards: shuffledStack.slice(
-      config.playerCardsAmount,
-      2 * config.playerCardsAmount
+    stackCards: range(
+      2 * config.playerCardsAmount + config.tableCardsAmount,
+      Math.floor(
+        (shuffledStack.length -
+          config.tableCardsAmount -
+          2 * config.playerCardsAmount) /
+          (2 * config.playerCardsAmount)
+      ) *
+        2 *
+        config.playerCardsAmount
     ),
 
-    tableCards: shuffledStack.slice(
-      2 * config.playerCardsAmount,
-      2 * config.playerCardsAmount + config.tableCardsAmount
-    ),
-
-    stackCards: shuffledStack.slice(
-      2 * config.playerCardsAmount + config.tableCardsAmount
-    ),
+    shuffledStack,
 
     selectedTableCards: [],
     selectedPlayerCard: null,
     selectedAiCard: null,
 
-    playerStackLength: 0,
-    aiStackLength: 0,
+    playerStack: [],
+    aiStack: [],
 
     playerSweeps: 0,
     aiSweeps: 0,
@@ -73,12 +77,9 @@ export function reducer(state, action) {
         isPlayerTurn: false,
         selectedPlayerCard: null,
         selectedTableCards: [],
-        tableCards: [
-          ...state.tableCards,
-          state.playerCards[state.selectedPlayerCard],
-        ],
+        tableCards: [...state.tableCards, state.selectedPlayerCard],
         playerCards: state.playerCards.filter(
-          (_, i) => i !== state.selectedPlayerCard
+          (v) => v !== state.selectedPlayerCard
         ),
       }
 
@@ -94,8 +95,8 @@ export function reducer(state, action) {
     case 'play attempted': {
       const isValidPlay =
         state.selectedTableCards.reduce(
-          (acc, current) => acc + state.tableCards[current].value,
-          state.playerCards[state.selectedPlayerCard].value
+          (acc, current) => acc + state.shuffledStack[current],
+          state.shuffledStack[state.selectedPlayerCard]
         ) === state.config.targetValue
 
       if (!isValidPlay) {
@@ -106,7 +107,7 @@ export function reducer(state, action) {
       }
 
       const tableCards = state.tableCards.filter(
-        (_, i) => !state.selectedTableCards.includes(i)
+        (v) => !state.selectedTableCards.includes(v)
       )
 
       return {
@@ -116,10 +117,13 @@ export function reducer(state, action) {
         isPlayerTurn: false,
         tableCards,
         playerCards: state.playerCards.filter(
-          (_, i) => i !== state.selectedPlayerCard
+          (v) => v !== state.selectedPlayerCard
         ),
-        playerStackLength:
-          state.playerStackLength + state.selectedTableCards.length + 1,
+        playerStack: [
+          ...state.playerStack,
+          ...state.selectedTableCards,
+          state.selectedPlayerCard,
+        ],
         playerSweeps:
           tableCards.length === 0 ? state.playerSweeps + 1 : state.playerSweeps,
         message: null,
@@ -130,6 +134,7 @@ export function reducer(state, action) {
       const [cardIndex, ...tableIndixes] = utils.getBestPlay(
         state.aiCards,
         state.tableCards,
+        state.shuffledStack,
         state.config.targetValue
       )
 
@@ -147,16 +152,13 @@ export function reducer(state, action) {
           ...state,
           selectedAiCard: null,
           isPlayerTurn: true,
-          tableCards: [
-            ...state.tableCards,
-            state.aiCards[state.selectedAiCard],
-          ],
-          aiCards: state.aiCards.filter((_, i) => i !== state.selectedAiCard),
+          tableCards: [...state.tableCards, state.selectedAiCard],
+          aiCards: state.aiCards.filter((v) => v !== state.selectedAiCard),
         }
       }
 
       const tableCards = state.tableCards.filter(
-        (_, i) => !state.selectedTableCards.includes(i)
+        (v) => !state.selectedTableCards.includes(v)
       )
 
       return {
@@ -165,9 +167,12 @@ export function reducer(state, action) {
         selectedTableCards: [],
         selectedAiCard: null,
         tableCards,
-        aiCards: state.aiCards.filter((_, i) => i !== state.selectedAiCard),
-        aiStackLength:
-          state.aiStackLength + state.selectedTableCards.length + 1,
+        aiCards: state.aiCards.filter((v) => v !== state.selectedAiCard),
+        aiStack: [
+          ...state.aiStack,
+          ...state.selectedTableCards,
+          state.selectedAiCard,
+        ],
         aiSweeps: tableCards.length === 0 ? state.aiSweeps + 1 : state.aiSweeps,
       }
     }
