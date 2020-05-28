@@ -1,6 +1,7 @@
 import React, { useReducer, useEffect, useState } from 'react'
 
 import { init, reducer } from './store'
+import RulesDialog from './components/RulesDialog'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
 import ScoreBoard from './components/ScoreBoard'
@@ -26,6 +27,7 @@ function Game({ initialConfig }) {
     init
   )
   const [isConfigVisible, setIsConfigVisible] = useState(false)
+  const [isRulesVisible, setIsRulesVisible] = useState(true)
 
   const hasStackEnoughCards =
     state.stackCards.length >= 2 * state.config.playerCardsAmount
@@ -66,7 +68,7 @@ function Game({ initialConfig }) {
       dispatch({ type: 'new cards requested' })
       return
     }
-    if (!state.isPlayerTurn) {
+    if (!state.isPlayerTurn && !isRulesVisible) {
       setTimeout(
         () => dispatch({ type: 'ai play requested' }),
         config.aiPlayDelay
@@ -77,12 +79,12 @@ function Game({ initialConfig }) {
     state.isPlayerTurn,
     isGameFinished,
     hasPlayerCards,
+    isRulesVisible,
     hasAiCards,
   ])
 
   return (
     <div>
-      <p>Sumá {state.config.targetValue}</p>
       <button
         className="configBtn"
         onClick={() => setIsConfigVisible((s) => !s)}
@@ -91,6 +93,13 @@ function Game({ initialConfig }) {
       >
         <span className="visuallyHidden">Configuración</span>⚙️
       </button>
+
+      {isRulesVisible && (
+        <RulesDialog
+          currentConfig={state.config}
+          onClose={() => setIsRulesVisible(false)}
+        />
+      )}
 
       {isConfigVisible && (
         <ConfigForm
