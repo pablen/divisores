@@ -54,6 +54,8 @@
 
 .doNotShowAgain input {
   margin-right: 0.5rem;
+  position: relative;
+  top: 2px;
 }
 
 .container button {

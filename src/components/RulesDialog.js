@@ -30,25 +30,19 @@ export default function RulesDialog({ onClose, currentConfig }) {
           propias que sumen <strong>{currentConfig.targetValue} puntos</strong>.
         </p>
         <p>
+          Si no se puede jugar se debe <strong>descartar</strong>.
+        </p>
+        <p>
           Levantar todas las cartas de la mesa suma una <strong>escoba</strong>.
         </p>
         <p>
-          Si no hay cartas en la mesa o no se puede sumar{' '}
-          {currentConfig.targetValue} puntos se debe <strong>descartar</strong>.
-        </p>
-        <p>
-          Una vez jugadas las cartas iniciales, se reparten{' '}
-          {currentConfig.playerCardsAmount} cartas nuevamente a cada jugador
-          hasta que no queden más en el mazo.
-        </p>
-        <p>
-          Al terminar el juego los puntos se asignan de la siguiente manera:
+          Al finalizar el juego los puntos se asignan de la siguiente manera:
         </p>
         <p>
           <strong>1 punto por cada escoba.</strong>
         </p>
         <p>
-          <strong>1 punto al que tiene más cartas.</strong>
+          <strong>1 punto al que juntó más cartas.</strong>
         </p>
         <label className={styles.doNotShowAgain}>
           <input

@@ -1,52 +1,41 @@
 .container {
-  position: relative;
   display: block;
   padding: 0;
   margin: 0;
-  background: rgb(250, 250, 250);
-  border: 0.04em solid rgb(192, 192, 192);
-  border-radius: 0.2em;
-  line-height: 1;
-  font-size: 5vh;
-  text-align: center;
-
-  /* real playing cards size is 62mm x 88mm */
-  width: 2em;
-  height: 2.83em;
-}
-
-.container svg {
-  display: block;
-}
-
-.number {
-  font-family: sans-serif;
-  color: rgb(102, 102, 102);
-}
-
-.type-number .number {
-  line-height: 2.8em;
-}
-
-.type-image .number {
-  position: absolute;
-  top: 0.7vh;
-  right: 1vh;
-  font-size: 2.5vh;
+  background: none;
+  border: none;
+  outline: none;
 }
 
 button.container:not([disabled]):hover {
-  background-color: rgb(230, 230, 230);
   cursor: pointer;
 }
 
-.container.container.container[aria-selected='true'] {
-  background-color: rgb(251, 233, 146);
-  border-color: rgb(251, 192, 146);
+.front,
+.back {
+  display: block;
+  height: var(--card-height);
 }
 
-.container[aria-selected='true']:focus,
-.container:focus {
-  outline: none;
-  border-color: rgb(78, 76, 93);
+.front rect {
+  fill: #fafafa;
+  stroke: rgb(192, 192, 192);
+}
+
+button.container:not([disabled]):not([aria-selected='true']):hover .front rect {
+  fill: rgb(230, 230, 230);
+}
+
+.container[aria-selected='true'] .front rect {
+  fill: rgb(251, 233, 146);
+  stroke: rgb(251, 192, 146);
+}
+
+button.container[aria-selected='true']:focus .front rect,
+button.container:focus .front rect {
+  stroke: rgb(78, 76, 93);
+}
+
+.front text {
+  fill: rgb(102, 102, 102);
 }

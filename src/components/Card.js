@@ -2,10 +2,12 @@ import { motion } from 'framer-motion'
 import PropTypes from 'prop-types'
 import React from 'react'
 
-import Figures from './Figures'
+import CardFront from './CardFront'
+import CardBack from './CardBack'
 import styles from './Card.module.css'
 
 export default function Card({
+  isReversed,
   isDisabled,
   isSelected,
   onClick,
@@ -26,15 +28,18 @@ export default function Card({
           layoutId: id,
           onClick,
           type: 'button',
-          id,
         }
-      : { className, 'aria-selected': isSelected, id, layoutId: id },
-    <span className={styles.number}>{value}</span>,
-    actualType === 'image' && <Figures value={value} />
+      : { className, 'aria-selected': isSelected, layoutId: id },
+    isReversed ? (
+      <CardBack className={styles.back} />
+    ) : (
+      <CardFront className={styles.front} value={value} type={actualType} />
+    )
   )
 }
 
 Card.propTypes = {
+  isReversed: PropTypes.bool,
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
   onClick: PropTypes.func,

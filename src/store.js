@@ -77,6 +77,7 @@ export function reducer(state, action) {
         isPlayerTurn: false,
         selectedPlayerCard: null,
         selectedTableCards: [],
+        message: null,
         tableCards: [...state.tableCards, state.selectedPlayerCard],
         playerCards: state.playerCards.filter(
           (v) => v !== state.selectedPlayerCard

@@ -4,24 +4,12 @@
   width: auto;
 }
 
-@media (min-width: 400px) {
-  .container.container {
-    max-width: 400px;
-  }
-}
-
 .wrapper {
   border-radius: 0.5rem;
   background-color: rgb(83, 140, 83);
   box-shadow: 0 1rem 2rem -1rem black;
   margin: 0 auto;
   padding: 1rem 0.5rem;
-}
-
-@media (min-width: 400px) {
-  .wrapper {
-    padding: 2rem 2rem;
-  }
 }
 
 .title {
@@ -138,4 +126,27 @@
 
 .controls [type='submit'] {
   background: rgba(255, 255, 255, 0.14);
+}
+
+@media (min-width: 700px) {
+  .container.container {
+    max-width: 800px;
+  }
+
+  .row {
+    display: flex;
+  }
+
+  .col {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .col + .col {
+    margin-left: 2rem;
+  }
+
+  .wrapper {
+    padding: 2rem 2rem;
+  }
 }

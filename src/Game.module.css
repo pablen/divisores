@@ -1,0 +1,238 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+  min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+.configBtn {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: none;
+  font-size: 1.5em;
+  position: absolute;
+  top: 0.5em;
+  right: 0.5em;
+  outline: none;
+  cursor: pointer;
+}
+
+.aiSection,
+.tableSection,
+.playerSection {
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+/* off-screen AI deck */
+.aiDeck {
+  position: absolute;
+  top: -35vmin;
+}
+
+.playerDeck {
+  position: absolute;
+  bottom: -20vmin;
+}
+
+.playerDeck > div,
+.aiDeck > div {
+  position: absolute;
+  top: 0;
+}
+
+.tableSection {
+  background: rgba(66, 66, 66, 0.2);
+  border-radius: 2vmin;
+  box-shadow: 0 0.5vmin 1vmin -0.3vmin #0000006b inset;
+  max-width: 640px;
+  width: 100%;
+  position: relative;
+}
+
+.gameSummary {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.gameResult {
+  font-size: 2rem;
+}
+
+.tableSide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 1vw;
+}
+
+.gameFinished .tableSide,
+.gameFinished .tableCards {
+  opacity: 0.025;
+}
+
+.deckContainer {
+  flex-grow: 1;
+  display: flex;
+  position: relative;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.deckContainer > div {
+  position: absolute;
+}
+
+.placeholder {
+  height: var(--card-height);
+}
+
+.playerStack,
+.tableStack,
+.aiStack {
+  position: relative;
+  width: var(--card-width);
+  height: var(--card-height);
+  margin-right: 1vh;
+}
+
+.playerStack,
+.aiStack {
+  margin-right: 0;
+  position: absolute;
+}
+
+.aiStack {
+  top: -20vh;
+}
+
+.playerStack {
+  bottom: -60vh;
+}
+
+.playerStack > div,
+.tableStack > div,
+.aiStack > div {
+  position: absolute;
+}
+
+.tableCards {
+  --vertical-padding: 1vmin;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1;
+  padding: var(--vertical-padding) 0;
+  min-height: calc(var(--vertical-padding) * 6 + var(--card-height) * 2);
+}
+
+.tableCards > button {
+  margin: 1vmin 0.5vw;
+}
+
+.playerCards,
+.aiCards {
+  --vertical-padding: 2vmin;
+  display: flex;
+  justify-content: center;
+  min-height: calc(var(--vertical-padding) * 2 + var(--card-height));
+  padding: var(--vertical-padding) 0;
+  flex-grow: 1;
+}
+
+.playerCards > *,
+.aiCards > * {
+  margin: 0 0.5vw;
+}
+
+.controlsSection {
+  display: flex;
+  justify-content: center;
+  border-radius: 0.5em;
+  min-height: 43px;
+}
+
+.controlBtn {
+  color: white;
+  font: inherit;
+  margin: 0 1em;
+  padding: 0.7em 1em;
+  background: rgba(255, 255, 255, 0.23);
+  border: 0.06em solid transparent;
+  flex-basis: 0;
+  border-radius: 0.5em;
+  flex-grow: 1;
+  max-width: 140px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  outline: none;
+  opacity: 0.9;
+}
+
+.controlBtn:hover {
+  opacity: 0.99;
+}
+
+.controlBtn:focus {
+  opacity: 0.99;
+  border-color: rgb(78, 76, 93);
+}
+
+.controlBtn[disabled] {
+  cursor: not-allowed;
+  opacity: 0.2;
+}
+
+.controlBtnLarge {
+  max-width: 190px;
+  flex-grow: 0;
+}
+
+.messageSection {
+  text-align: center;
+  line-height: 30px;
+  min-height: 30px;
+  margin-top: 2vmin;
+  display: flex;
+  justify-content: center;
+  color: rgb(255, 255, 255);
+}
+
+.messageSection button {
+  color: rgb(255, 255, 255);
+  font: inherit;
+  font-size: 0.75em;
+  line-height: 1;
+  margin: 0 1em;
+  padding: 0.75em 1.5em;
+  background: rgba(255, 255, 255, 0.23);
+  border-radius: 0.5em;
+  border: none;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  outline: none;
+  opacity: 0.9;
+}
+
+.messageSection button:hover {
+  opacity: 0.99;
+}
+
+.messageSection button:focus {
+  opacity: 0.99;
+  border-color: rgb(78, 76, 93);
+}

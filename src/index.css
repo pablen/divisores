@@ -1,18 +1,37 @@
+:root {
+  /* COLORS */
+  --color-main-bg: rgb(83, 140, 83);
+  --color-copy: white;
+
+  /* real playing cards dimensions are 62mm x 88mm */
+  --card-height: 15vh;
+  --card-width: 10vh;
+}
+
 *,
 *::after,
 *::before {
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  height: 100vh;
+  height: -webkit-fill-available;
+}
+
 body {
-  margin: 1rem 2vw;
+  margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(83, 140, 83);
-  color: white;
+  background-color: var(--color-main-bg);
+  color: var(--color-copy);
+
+  overflow: hidden;
 }
 
 .visuallyHidden {
@@ -23,166 +42,4 @@ body {
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap; /* added line */
-}
-
-.configBtn {
-  background: rgba(0, 0, 0, 0);
-  padding: 0;
-  margin: 0;
-  border: none;
-  font-size: 1.5em;
-  position: absolute;
-  top: 0.5em;
-  right: 0.5em;
-  outline: none;
-  cursor: pointer;
-}
-
-.table {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: center;
-  background: rgba(66, 66, 66, 0.2);
-  border-radius: 2vmin;
-  box-shadow: 0 0.5vmin 1vmin -0.3vmin #0000006b inset;
-  padding: 2vw;
-  margin: 3vh auto;
-  min-height: calc(4vw + 17vh);
-  min-height: calc(4vw + 2vh + 5vh * 2.83);
-  max-width: 640px;
-}
-
-.table > * {
-  margin: 1vh 0.5vw;
-}
-
-.cardsStack {
-  justify-content: center;
-  display: flex;
-  min-height: calc(5vh * 2.83);
-}
-
-.cardsStack > * {
-  margin: 0 0.5vw;
-}
-
-.reverseCard {
-  display: inline-block;
-  padding: 0;
-  border: 0.06em solid rgb(208, 208, 208);
-  border-radius: 0.2em;
-  height: 3em;
-  line-height: 3em;
-  margin: 0 0.5vw;
-  width: 2em;
-  font-size: 4vh;
-  overflow: hidden;
-  text-indent: -999em;
-  vertical-align: bottom;
-  background: linear-gradient(
-      45deg,
-      rgb(221, 204, 170) 12%,
-      rgba(0, 0, 0, 0) 0,
-      rgba(0, 0, 0, 0) 88%,
-      rgb(221, 204, 170) 0
-    ),
-    linear-gradient(
-      135deg,
-      rgba(0, 0, 0, 0) 37%,
-      rgb(170, 136, 85) 0,
-      rgb(170, 136, 85) 63%,
-      rgba(0, 0, 0, 0) 0
-    ),
-    linear-gradient(
-        45deg,
-        rgba(0, 0, 0, 0) 37%,
-        rgb(221, 204, 170) 0,
-        rgb(221, 204, 170) 63%,
-        rgba(0, 0, 0, 0) 0
-      )
-      rgb(119, 85, 51);
-  background-size: 2vmin 2vmin;
-}
-
-.controls {
-  display: flex;
-  justify-content: center;
-  margin-top: 1em;
-  border-radius: 0.5em;
-}
-
-.controls button {
-  color: white;
-  font: inherit;
-  margin: 0 1em;
-  padding: 0.7em 1em;
-  background: rgba(255, 255, 255, 0.23);
-  border: 0.06em solid transparent;
-  flex-basis: 0;
-  border-radius: 0.5em;
-  flex-grow: 1;
-  max-width: 140px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  outline: none;
-  opacity: 0.9;
-}
-
-.controls .large {
-  max-width: 190px;
-}
-
-.controls button:hover {
-  opacity: 1;
-}
-
-.controls button:focus {
-  opacity: 1;
-  border-color: rgb(78, 76, 93);
-}
-
-.controls button[disabled] {
-  cursor: not-allowed;
-  opacity: 0.2;
-}
-
-.message {
-  text-align: center;
-  line-height: 2;
-  min-height: 2.2em;
-  margin-bottom: 1em;
-  color: rgb(255, 255, 255);
-}
-
-.message button {
-  color: rgb(255, 255, 255);
-  font: inherit;
-  font-size: 0.75em;
-  line-height: 1;
-  margin: 0 1em;
-  padding: 0.75em 1.5em;
-  background: rgba(255, 255, 255, 0.23);
-  border-radius: 0.5em;
-  border: 0.06em solid rgba(0, 0, 0, 0);
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  outline: none;
-  opacity: 0.9;
-}
-
-.message button:hover {
-  opacity: 1;
-}
-
-.message button:focus {
-  opacity: 1;
-  border-color: rgb(78, 76, 93);
-}
-
-.mainStack > .reverseCard {
-  margin: 0;
-  position: absolute;
 }

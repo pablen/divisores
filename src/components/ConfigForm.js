@@ -91,141 +91,147 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           Configuración
         </h2>
 
-        <div className={styles.field}>
-          <div className={styles.label}>Cargar preset:</div>
-          <div className={styles.presetRow}>
-            {Object.keys(presets).map((id) => (
-              <button
-                data-preset-id={id}
-                onClick={handlePreset}
-                type="button"
-                key={`preset-${id}`}
-              >
-                {presets[id].label}
-              </button>
-            ))}
-          </div>
-        </div>
+        <div className={styles.row}>
+          <div className={styles.col}>
+            <div className={styles.field}>
+              <div className={styles.label}>Cargar preset:</div>
+              <div className={styles.presetRow}>
+                {Object.keys(presets).map((id) => (
+                  <button
+                    data-preset-id={id}
+                    onClick={handlePreset}
+                    type="button"
+                    key={`preset-${id}`}
+                  >
+                    {presets[id].label}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="targetValue">
-            Escoba del:
-          </label>
-          <input
-            onChange={(e) =>
-              setTargetValue(
-                isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-              )
-            }
-            required
-            value={targetValue}
-            type="number"
-            min="2"
-            id="targetValue"
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="playerCardsAmount">
-            Cantidad de cartas por jugador:
-          </label>
-          <input
-            onChange={(e) =>
-              setPlayerCardsAmount(
-                isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-              )
-            }
-            required
-            value={playerCardsAmount}
-            type="number"
-            min="1"
-            id="playerCardsAmount"
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="tableCardsAmount">
-            Cantidad de cartas en la mesa:
-          </label>
-          <input
-            onChange={(e) =>
-              setTableCardsAmount(
-                isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-              )
-            }
-            required
-            value={tableCardsAmount}
-            type="number"
-            min="0"
-            id="tableCardsAmount"
-          />
-        </div>
-
-        <div className={styles.field}>
-          <label className={styles.checkbox}>
-            <input
-              onChange={(e) => setPauseOnAiPlay(e.target.checked)}
-              checked={pauseOnAiPlay}
-              type="checkbox"
-            />{' '}
-            Pausar cuando juega la máquina
-          </label>
-        </div>
-
-        <div className={styles.field}>
-          <div className={styles.label}>Tipo de carta:</div>
-          <div className={styles.cardTypesContainer}>
-            <label className={styles.label} htmlFor="cardType-image">
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="targetValue">
+                Escoba del:
+              </label>
               <input
-                className="visuallyHidden"
-                onChange={() => setCardType('image')}
-                checked={cardType === 'image'}
-                value="image"
-                name="cardType"
-                type="radio"
-                id="cardType-image"
-              />
-              <Card
-                isSelected={cardType === 'image'}
-                onClick={() => setCardType('image')}
-                value={5}
-                type="image"
-                id="image-icon"
-              />
-              <span className="visuallyHidden">Dibujos</span>
-            </label>
-            <label className={styles.label} htmlFor="cardType-number">
-              <input
-                className="visuallyHidden"
-                onChange={(e) => setCardType(e.target.value)}
-                checked={cardType === 'number'}
-                value="number"
-                name="cardType"
-                type="radio"
-                id="cardType-number"
-              />
-              <Card
-                isSelected={cardType === 'number'}
-                onClick={() => setCardType('number')}
-                value={5}
+                onChange={(e) =>
+                  setTargetValue(
+                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
+                  )
+                }
+                required
+                value={targetValue}
                 type="number"
-                id="number-icon"
+                min="2"
+                id="targetValue"
               />
-              <span className="visuallyHidden">Número</span>
-            </label>
-          </div>
-        </div>
+            </div>
 
-        <div className={styles.field}>
-          <label className={styles.label} htmlFor="availableCards">
-            Cartas del mazo:
-          </label>
-          <textarea
-            onChange={(e) => setAvailableCards(e.target.value)}
-            required
-            value={availableCards}
-            id="availableCards"
-          />
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="playerCardsAmount">
+                Cantidad de cartas por jugador:
+              </label>
+              <input
+                onChange={(e) =>
+                  setPlayerCardsAmount(
+                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
+                  )
+                }
+                required
+                value={playerCardsAmount}
+                type="number"
+                min="1"
+                id="playerCardsAmount"
+              />
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="tableCardsAmount">
+                Cantidad de cartas en la mesa:
+              </label>
+              <input
+                onChange={(e) =>
+                  setTableCardsAmount(
+                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
+                  )
+                }
+                required
+                value={tableCardsAmount}
+                type="number"
+                min="0"
+                id="tableCardsAmount"
+              />
+            </div>
+          </div>
+
+          <div className={styles.col}>
+            <div className={styles.field}>
+              <label className={styles.checkbox}>
+                <input
+                  onChange={(e) => setPauseOnAiPlay(e.target.checked)}
+                  checked={pauseOnAiPlay}
+                  type="checkbox"
+                />{' '}
+                Pausar cuando juega la máquina
+              </label>
+            </div>
+
+            <div className={styles.field}>
+              <div className={styles.label}>Tipo de carta:</div>
+              <div className={styles.cardTypesContainer}>
+                <label className={styles.label} htmlFor="cardType-image">
+                  <input
+                    className="visuallyHidden"
+                    onChange={() => setCardType('image')}
+                    checked={cardType === 'image'}
+                    value="image"
+                    name="cardType"
+                    type="radio"
+                    id="cardType-image"
+                  />
+                  <Card
+                    isSelected={cardType === 'image'}
+                    onClick={() => setCardType('image')}
+                    value={5}
+                    type="image"
+                    id="image-icon"
+                  />
+                  <span className="visuallyHidden">Dibujos</span>
+                </label>
+                <label className={styles.label} htmlFor="cardType-number">
+                  <input
+                    className="visuallyHidden"
+                    onChange={(e) => setCardType(e.target.value)}
+                    checked={cardType === 'number'}
+                    value="number"
+                    name="cardType"
+                    type="radio"
+                    id="cardType-number"
+                  />
+                  <Card
+                    isSelected={cardType === 'number'}
+                    onClick={() => setCardType('number')}
+                    value={5}
+                    type="number"
+                    id="number-icon"
+                  />
+                  <span className="visuallyHidden">Número</span>
+                </label>
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="availableCards">
+                Cartas del mazo:
+              </label>
+              <textarea
+                onChange={(e) => setAvailableCards(e.target.value)}
+                required
+                value={availableCards}
+                id="availableCards"
+              />
+            </div>
+          </div>
         </div>
 
         {message && <p>{message}</p>}

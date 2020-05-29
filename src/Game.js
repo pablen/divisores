@@ -1,13 +1,15 @@
 import React, { useReducer, useEffect, useState } from 'react'
-import { AnimateSharedLayout, motion } from 'framer-motion'
+import { AnimateSharedLayout } from 'framer-motion'
 import PropTypes from 'prop-types'
 
 import { init, reducer } from './store'
+import CardPlaceholder from './components/CardPlaceholder'
 import RulesDialog from './components/RulesDialog'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
 import ScoreBoard from './components/ScoreBoard'
 import * as utils from './utils'
+import styles from './Game.module.css'
 import Card from './components/Card'
 
 function Game({ initialConfig, showRules }) {
@@ -49,6 +51,7 @@ function Game({ initialConfig, showRules }) {
 
   const canDiscard =
     !isGameFinished && state.isPlayerTurn && state.selectedPlayerCard !== null
+  // && state.selectedTableCards.length === 0
 
   const canPlay =
     !isGameFinished &&
@@ -89,16 +92,196 @@ function Game({ initialConfig, showRules }) {
     hasAiCards,
   ])
 
+  const message = isGameFinished
+    ? ''
+    : state.message ||
+      (state.isPlayerTurn
+        ? 'Tu Turno'
+        : state.selectedAiCard !== null
+        ? state.selectedTableCards.length === 0
+          ? `La máquina se descarta un ${
+              state.shuffledStack[state.selectedAiCard]
+            }`
+          : `La máquina juega ${[
+              state.shuffledStack[state.selectedAiCard],
+              ...state.selectedTableCards.map((i) => state.shuffledStack[i]),
+            ].join(' + ')} = ${state.config.targetValue}`
+        : 'Esperando a que juege la máquina...')
+
   return (
-    <div>
+    <div className={styles.container}>
       <button
-        className="configBtn"
+        className={styles.configBtn}
         onClick={() => setIsConfigVisible((s) => !s)}
         title="Configuración"
         type="button"
       >
         <span className="visuallyHidden">Configuración</span>⚙️
       </button>
+
+      <AnimateSharedLayout>
+        <section className={styles.aiSection}>
+          <div className={styles.aiCards}>
+            {state.aiCards.map((card) => (
+              <Card
+                isReversed={state.selectedAiCard !== card}
+                isSelected={state.selectedAiCard === card}
+                value={state.shuffledStack[card]}
+                type={state.config.cardType}
+                key={`card-${card}`}
+                id={`card-${card}`}
+              />
+            ))}
+          </div>
+          <div className={styles.aiDeck}>
+            {state.aiStack.map((card) => (
+              <Card
+                value={state.shuffledStack[card]}
+                type={state.config.cardType}
+                key={`card-${card}`}
+                id={`card-${card}`}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section
+          className={[
+            styles.tableSection,
+            isGameFinished ? styles.gameFinished : '',
+          ].join(' ')}
+        >
+          <div className={styles.tableSide}>
+            <div className={styles.deckContainer}>
+              <CardPlaceholder className={styles.placeholder} />
+              {state.stackCards.map((card) => (
+                <Card
+                  isReversed
+                  value={state.shuffledStack[card]}
+                  type={state.config.cardType}
+                  key={`card-${card}`}
+                  id={`card-${card}`}
+                />
+              ))}
+            </div>
+          </div>
+          <div className={styles.tableCards}>
+            {state.tableCards.map((card) => (
+              <Card
+                isSelected={state.selectedTableCards.includes(card)}
+                isDisabled={isGameFinished || !state.isPlayerTurn}
+                onClick={() =>
+                  dispatch({ type: 'table card selected', payload: card })
+                }
+                value={state.shuffledStack[card]}
+                type={state.config.cardType}
+                key={`card-${card}`}
+                id={`card-${card}`}
+              />
+            ))}
+          </div>
+          {isGameFinished && (
+            <div className={styles.gameSummary}>
+              <div className={styles.gameResult}>
+                {playerPoints > aiPoints
+                  ? '🏆 ¡Ganaste! 🏆'
+                  : playerPoints < aiPoints
+                  ? 'Perdiste'
+                  : 'Empate'}
+              </div>
+              <ScoreBoard
+                playerStackLength={state.playerStack.length}
+                aiStackLength={state.aiStack.length}
+                playerSweeps={state.playerSweeps}
+                playerPoints={playerPoints}
+                aiSweeps={state.aiSweeps}
+                aiPoints={aiPoints}
+              />
+              <button
+                autoFocus
+                className={`${styles.controlBtn} ${styles.controlBtnLarge}`}
+                onClick={() =>
+                  dispatch({
+                    type: 'reset',
+                    payload: {
+                      shuffledStack: utils.getShuffledStack(
+                        state.config.availableCards
+                      ),
+                      isPlayerTurn: utils.getRandomTurn(),
+                    },
+                  })
+                }
+                type="button"
+              >
+                Jugar De Nuevo
+              </button>
+            </div>
+          )}
+        </section>
+
+        <section className={styles.messageSection}>
+          {message}
+          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
+            <button
+              onClick={() => dispatch({ type: 'ai play accepted' })}
+              type="button"
+            >
+              OK
+            </button>
+          )}
+        </section>
+
+        <section className={styles.playerSection}>
+          <div className={styles.playerCards}>
+            {state.playerCards.map((card) => (
+              <Card
+                isSelected={state.selectedPlayerCard === card}
+                isDisabled={!state.isPlayerTurn}
+                onClick={() =>
+                  dispatch({ type: 'player card selected', payload: card })
+                }
+                value={state.shuffledStack[card]}
+                type={state.config.cardType}
+                key={`card-${card}`}
+                id={`card-${card}`}
+              />
+            ))}
+          </div>
+          <div className={styles.playerDeck}>
+            {state.playerStack.map((card) => (
+              <Card
+                value={state.shuffledStack[card]}
+                type={state.config.cardType}
+                key={`card-${card}`}
+                id={`card-${card}`}
+              />
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.controlsSection}>
+          {!isGameFinished && (
+            <>
+              <button
+                className={styles.controlBtn}
+                disabled={!canPlay}
+                onClick={() => dispatch({ type: 'play attempted' })}
+                type="button"
+              >
+                Jugar
+              </button>
+              <button
+                className={styles.controlBtn}
+                disabled={!canDiscard}
+                onClick={() => dispatch({ type: 'player card discarded' })}
+                type="button"
+              >
+                Descartar
+              </button>
+            </>
+          )}
+        </section>
+      </AnimateSharedLayout>
 
       {isRulesVisible && (
         <RulesDialog
@@ -122,179 +305,6 @@ function Game({ initialConfig, showRules }) {
           onClose={() => setIsConfigVisible(false)}
         />
       )}
-
-      <AnimateSharedLayout>
-        <div className="aiContainer">
-          <div className="cardsStack">
-            {state.aiCards.map((card) =>
-              state.selectedAiCard === card ? (
-                <Card
-                  isSelected
-                  value={state.shuffledStack[card]}
-                  type={state.config.cardType}
-                  key={`card-${card}`}
-                  id={`card-${card}`}
-                />
-              ) : (
-                <motion.div
-                  className="reverseCard"
-                  layoutId={`card-${card}`}
-                  key={`card-${card}`}
-                >
-                  {state.shuffledStack[card]}
-                </motion.div>
-              )
-            )}
-          </div>
-          <div className="mainStack" style={{ float: 'right' }}>
-            {state.aiStack.map((card) => (
-              <motion.div
-                className="reverseCard"
-                layoutId={`card-${card}`}
-                key={`card-${card}`}
-              >
-                {state.shuffledStack[card]}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mainStack">
-          {state.stackCards.map((card) => (
-            <motion.div
-              className="reverseCard"
-              layoutId={`card-${card}`}
-              key={`card-${card}`}
-            >
-              {state.shuffledStack[card]}
-            </motion.div>
-          ))}
-        </div>
-
-        <div className="table">
-          {state.tableCards.map((card) => (
-            <Card
-              isSelected={state.selectedTableCards.includes(card)}
-              isDisabled={isGameFinished || !state.isPlayerTurn}
-              onClick={() =>
-                dispatch({ type: 'table card selected', payload: card })
-              }
-              value={state.shuffledStack[card]}
-              type={state.config.cardType}
-              key={`card-${card}`}
-              id={`card-${card}`}
-            />
-          ))}
-        </div>
-
-        <div className="playerContainer">
-          <div className="message">
-            {isGameFinished
-              ? playerPoints > aiPoints
-                ? 'Ganaste 😎'
-                : playerPoints < aiPoints
-                ? 'Perdiste 😭'
-                : 'Empate 😐'
-              : state.message ||
-                (state.isPlayerTurn
-                  ? 'Tu Turno'
-                  : state.selectedAiCard !== null
-                  ? state.selectedTableCards.length === 0
-                    ? `La máquina se descarta un ${
-                        state.shuffledStack[state.selectedAiCard]
-                      }`
-                    : `La máquina juega ${[
-                        state.shuffledStack[state.selectedAiCard],
-                        ...state.selectedTableCards.map(
-                          (i) => state.shuffledStack[i]
-                        ),
-                      ].join(' + ')} = ${state.config.targetValue}`
-                  : 'Esperando a que juege la máquina...')}
-
-            {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-              <button
-                onClick={() => dispatch({ type: 'ai play accepted' })}
-                type="button"
-              >
-                OK
-              </button>
-            )}
-          </div>
-
-          <div className="cardsStack">
-            {state.playerCards.map((card) => (
-              <Card
-                isSelected={state.selectedPlayerCard === card}
-                isDisabled={!state.isPlayerTurn}
-                onClick={() =>
-                  dispatch({ type: 'player card selected', payload: card })
-                }
-                value={state.shuffledStack[card]}
-                type={state.config.cardType}
-                key={`card-${card}`}
-                id={`card-${card}`}
-              />
-            ))}
-          </div>
-          <div className="mainStack" style={{ float: 'right' }}>
-            {state.playerStack.map((card) => (
-              <motion.div
-                className="reverseCard"
-                layoutId={`card-${card}`}
-                key={`card-${card}`}
-              >
-                {state.shuffledStack[card]}
-              </motion.div>
-            ))}
-          </div>
-
-          <div className="controls">
-            {isGameFinished ? (
-              <button
-                className="large"
-                onClick={() =>
-                  dispatch({
-                    type: 'reset',
-                    payload: {
-                      shuffledStack: utils.getShuffledStack(
-                        state.config.availableCards
-                      ),
-                      isPlayerTurn: utils.getRandomTurn(),
-                    },
-                  })
-                }
-                type="button"
-              >
-                Jugar De Nuevo
-              </button>
-            ) : (
-              <>
-                <button
-                  disabled={!canPlay}
-                  onClick={() => dispatch({ type: 'play attempted' })}
-                  type="button"
-                >
-                  Jugar
-                </button>
-                <button
-                  disabled={!canDiscard}
-                  onClick={() => dispatch({ type: 'player card discarded' })}
-                  type="button"
-                >
-                  Descartar
-                </button>
-              </>
-            )}
-          </div>
-
-          <ScoreBoard
-            playerStackLength={state.playerStack.length}
-            aiStackLength={state.aiStack.length}
-            playerSweeps={state.playerSweeps}
-            aiSweeps={state.aiSweeps}
-          />
-        </div>
-      </AnimateSharedLayout>
     </div>
   )
 }
