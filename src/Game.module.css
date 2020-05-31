@@ -2,9 +2,15 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   height: 100%;
   min-height: 100vh;
   min-height: -webkit-fill-available;
+
+  /* Required to hide AI and player decks */
+  overflow: hidden;
+  position: relative;
+  padding: 0 0.5rem;
 }
 
 .configBtn {
@@ -25,10 +31,10 @@
 .playerSection {
   display: flex;
   justify-content: center;
-  margin: 0 auto;
+  align-items: center;
 }
 
-/* off-screen AI deck */
+/* Off-screen AI deck */
 .aiDeck {
   position: absolute;
   top: -35vmin;
@@ -64,17 +70,35 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  padding: 0 2vw;
 }
 
 .gameResult {
-  font-size: 2rem;
+  font-size: 1.5rem;
+}
+
+@media (min-width: 600px) {
+  .gameResult {
+    font-size: 2rem;
+  }
 }
 
 .tableSide {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 1vw;
+  padding-left: 1vw;
+
+  /* Off-screen table deck on narrow devices */
+  position: absolute;
+  left: -15vh;
+}
+
+@media (min-width: 510px) {
+  .tableSide {
+    position: static;
+    left: auto;
+  }
 }
 
 .gameFinished .tableSide,
@@ -98,35 +122,6 @@
   height: var(--card-height);
 }
 
-.playerStack,
-.tableStack,
-.aiStack {
-  position: relative;
-  width: var(--card-width);
-  height: var(--card-height);
-  margin-right: 1vh;
-}
-
-.playerStack,
-.aiStack {
-  margin-right: 0;
-  position: absolute;
-}
-
-.aiStack {
-  top: -20vh;
-}
-
-.playerStack {
-  bottom: -60vh;
-}
-
-.playerStack > div,
-.tableStack > div,
-.aiStack > div {
-  position: absolute;
-}
-
 .tableCards {
   --vertical-padding: 1vmin;
   display: flex;
@@ -139,7 +134,7 @@
 }
 
 .tableCards > button {
-  margin: 1vmin 0.5vw;
+  margin: 1vmin 1vw;
 }
 
 .playerCards,
@@ -154,85 +149,31 @@
 
 .playerCards > *,
 .aiCards > * {
-  margin: 0 0.5vw;
+  margin: 0 1vw;
+}
+
+.messageSection {
+  text-align: center;
+  line-height: 40px;
+  min-height: 40px;
+  margin-top: 2vmin;
+  color: rgb(255, 255, 255);
+}
+
+.okBtn {
+  margin-left: 1rem;
+  padding: 0.6em 1.5em;
+  line-height: 1;
+  font-size: 0.9rem;
 }
 
 .controlsSection {
   display: flex;
   justify-content: center;
   border-radius: 0.5em;
-  min-height: 43px;
+  min-height: 54px;
 }
 
 .controlBtn {
-  color: white;
-  font: inherit;
-  margin: 0 1em;
-  padding: 0.7em 1em;
-  background: rgba(255, 255, 255, 0.23);
-  border: 0.06em solid transparent;
-  flex-basis: 0;
-  border-radius: 0.5em;
-  flex-grow: 1;
-  max-width: 140px;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  outline: none;
-  opacity: 0.9;
-}
-
-.controlBtn:hover {
-  opacity: 0.99;
-}
-
-.controlBtn:focus {
-  opacity: 0.99;
-  border-color: rgb(78, 76, 93);
-}
-
-.controlBtn[disabled] {
-  cursor: not-allowed;
-  opacity: 0.2;
-}
-
-.controlBtnLarge {
-  max-width: 190px;
-  flex-grow: 0;
-}
-
-.messageSection {
-  text-align: center;
-  line-height: 30px;
-  min-height: 30px;
-  margin-top: 2vmin;
-  display: flex;
-  justify-content: center;
-  color: rgb(255, 255, 255);
-}
-
-.messageSection button {
-  color: rgb(255, 255, 255);
-  font: inherit;
-  font-size: 0.75em;
-  line-height: 1;
-  margin: 0 1em;
-  padding: 0.75em 1.5em;
-  background: rgba(255, 255, 255, 0.23);
-  border-radius: 0.5em;
-  border: none;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  outline: none;
-  opacity: 0.9;
-}
-
-.messageSection button:hover {
-  opacity: 0.99;
-}
-
-.messageSection button:focus {
-  opacity: 0.99;
-  border-color: rgb(78, 76, 93);
+  min-width: 170px;
 }

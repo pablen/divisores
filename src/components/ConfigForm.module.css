@@ -1,152 +1,95 @@
-.container.container {
+[data-reach-dialog-overlay] {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.container {
   background-color: transparent;
   padding: 0.5rem;
   width: auto;
 }
 
+@media (min-width: 700px) {
+  .container {
+    max-width: 800px;
+  }
+}
+
 .wrapper {
   border-radius: 0.5rem;
   background-color: rgb(83, 140, 83);
-  box-shadow: 0 1rem 2rem -1rem black;
+  box-shadow: 0 1rem 2rem -1rem #222;
   margin: 0 auto;
-  padding: 1rem 0.5rem;
+  padding: 1rem;
+}
+
+@media (min-width: 700px) {
+  .wrapper {
+    padding: 2rem;
+  }
 }
 
 .title {
-  color: rgb(255, 255, 255);
+  color: var(--color-copy);
   font-weight: bold;
   text-transform: uppercase;
   font-size: 1em;
   letter-spacing: 2px;
-  margin: 0 0 2em;
-}
-
-.field + .field {
-  margin-top: 1em;
-}
-
-.label {
-  font-weight: normal;
-  display: block;
-  color: white;
-  margin-bottom: 0.25em;
-}
-
-.field [aria-selected] {
-  transform: none !important;
-}
-
-.presetRow {
-  display: flex;
-  margin: 0 -2px;
-}
-
-.presetRow button {
-  display: block;
-  flex-basis: 0;
-  flex-grow: 1;
-  cursor: pointer;
-  background: rgba(255, 255, 255, 0.14);
-  border: none;
-  font: inherit;
-  color: rgb(255, 255, 255);
-  outline: none;
-  border-radius: 0.25em;
-  text-transform: uppercase;
-  padding: 0.5em 0.4em;
-  letter-spacing: 1px;
-  font-size: 0.8rem;
-  margin: 0 2px;
-}
-
-.cardTypesContainer {
-  margin-top: 0.25em;
-  display: flex;
-}
-
-.cardTypesContainer .label + .label {
-  margin-left: 1em;
-}
-
-.field input:not([type='radio']):not([type='checkbox']),
-.field textarea {
-  font: inherit;
-  font-size: 1.1em;
-  color: white;
-  display: block;
-  width: 100%;
-  display: block;
-  width: 100%;
-  border: none;
-  background: rgba(255, 255, 255, 0.14);
-  line-height: 2;
-  border-radius: 0.25em;
-  padding: 0 0.2em;
-  margin: 0;
-  outline: none;
-}
-
-.field textarea {
-  resize: vertical;
-  min-height: 4em;
-}
-
-.checkbox {
-  color: white;
-  cursor: pointer;
-  margin: 0.5em 0;
-  display: inline-block;
-}
-
-.checkbox input {
-  margin: 0 0.5em 0 0;
-  font-size: inherit;
-  position: relative;
-  top: -1px;
-}
-
-.controls {
-  margin-top: 2rem;
-}
-
-.controls button {
-  font: inherit;
-  font-size: 0.8em;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin: 0;
-  padding: 0.75em 1.5em;
-  border: none;
-  color: white;
-  border-radius: 0.25em;
-  background-color: transparent;
-  cursor: pointer;
-  outline: none;
-}
-
-.controls [type='submit'] {
-  background: rgba(255, 255, 255, 0.14);
+  margin: 0 0 1em;
 }
 
 @media (min-width: 700px) {
-  .container.container {
-    max-width: 800px;
+  .title {
+    margin-bottom: 0 0 2em;
   }
+}
 
+@media (min-width: 700px) {
   .row {
     display: flex;
   }
+}
 
+.col + .col {
+  margin-top: 1em;
+}
+
+@media (min-width: 700px) {
   .col {
     flex-grow: 1;
     flex-basis: 0;
   }
 
   .col + .col {
-    margin-left: 2rem;
+    margin-top: 0;
+    margin-left: 4rem;
   }
+}
 
-  .wrapper {
-    padding: 2rem 2rem;
-  }
+.presetRow {
+  display: flex;
+  margin: 0.5em -3px;
+}
+
+.presetRow button {
+  display: block;
+  flex-basis: 0;
+  flex-grow: 1;
+  margin: 0 3px;
+}
+
+.cardTypesContainer {
+  margin-top: 0.5em;
+  display: flex;
+}
+
+.cardTypesContainer .cardIcon + .cardIcon {
+  margin-left: 1em;
+}
+
+.cardTypesContainer svg {
+  height: 90px;
+}
+
+.controls {
+  margin-top: 2rem;
 }

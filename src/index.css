@@ -2,6 +2,8 @@
   /* COLORS */
   --color-main-bg: rgb(83, 140, 83);
   --color-copy: white;
+  --color-copy-weak: #eee;
+  --color-copy-highlight: rgb(255, 178, 0);
 
   /* real playing cards dimensions are 62mm x 88mm */
   --card-height: 15vh;
@@ -30,8 +32,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-main-bg);
   color: var(--color-copy);
-
-  overflow: hidden;
 }
 
 .visuallyHidden {
@@ -42,4 +42,14 @@ body {
   clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
   clip: rect(1px, 1px, 1px, 1px);
   white-space: nowrap; /* added line */
+}
+
+::selection {
+  background-color: rgba(170, 240, 150, 0.5); /* WebKit/Blink Browsers */
+  color: black;
+}
+
+::-moz-selection {
+  background-color: rgba(170, 240, 150, 0.5); /* Gecko Browsers */
+  color: black;
 }

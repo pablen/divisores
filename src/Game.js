@@ -8,6 +8,7 @@ import RulesDialog from './components/RulesDialog'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
 import ScoreBoard from './components/ScoreBoard'
+import Btn from './components/Btn'
 import * as utils from './utils'
 import styles from './Game.module.css'
 import Card from './components/Card'
@@ -51,7 +52,6 @@ function Game({ initialConfig, showRules }) {
 
   const canDiscard =
     !isGameFinished && state.isPlayerTurn && state.selectedPlayerCard !== null
-  // && state.selectedTableCards.length === 0
 
   const canPlay =
     !isGameFinished &&
@@ -197,9 +197,8 @@ function Game({ initialConfig, showRules }) {
                 aiSweeps={state.aiSweeps}
                 aiPoints={aiPoints}
               />
-              <button
+              <Btn
                 autoFocus
-                className={`${styles.controlBtn} ${styles.controlBtnLarge}`}
                 onClick={() =>
                   dispatch({
                     type: 'reset',
@@ -214,7 +213,7 @@ function Game({ initialConfig, showRules }) {
                 type="button"
               >
                 Jugar De Nuevo
-              </button>
+              </Btn>
             </div>
           )}
         </section>
@@ -222,12 +221,13 @@ function Game({ initialConfig, showRules }) {
         <section className={styles.messageSection}>
           {message}
           {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-            <button
+            <Btn
+              className={styles.okBtn}
+              autoFocus
               onClick={() => dispatch({ type: 'ai play accepted' })}
-              type="button"
             >
               OK
-            </button>
+            </Btn>
           )}
         </section>
 
@@ -260,25 +260,19 @@ function Game({ initialConfig, showRules }) {
         </section>
 
         <section className={styles.controlsSection}>
-          {!isGameFinished && (
-            <>
-              <button
-                className={styles.controlBtn}
-                disabled={!canPlay}
-                onClick={() => dispatch({ type: 'play attempted' })}
-                type="button"
-              >
-                Jugar
-              </button>
-              <button
-                className={styles.controlBtn}
-                disabled={!canDiscard}
-                onClick={() => dispatch({ type: 'player card discarded' })}
-                type="button"
-              >
-                Descartar
-              </button>
-            </>
+          {!isGameFinished && (canPlay || canDiscard) && (
+            <Btn
+              className={styles.controlBtn}
+              disabled={!canPlay && !canDiscard}
+              onClick={() =>
+                dispatch({
+                  type: canPlay ? 'play attempted' : 'player card discarded',
+                })
+              }
+              type="button"
+            >
+              {canPlay ? 'Jugar' : 'Descartar'}
+            </Btn>
           )}
         </section>
       </AnimateSharedLayout>

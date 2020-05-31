@@ -1,0 +1,33 @@
+.label {
+  font-weight: normal;
+  display: block;
+  color: rgba(255, 255, 255, 0.8);
+  margin: 0;
+}
+
+.input {
+  font: inherit;
+  font-size: 1.1em;
+  color: var(--color-copy);
+  display: block;
+  width: 100%;
+  display: block;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  background: transparent;
+  line-height: 2;
+  border-radius: 0;
+  padding: 0;
+  margin: 0;
+  outline: none;
+}
+
+.input:not([disabled]):hover,
+.input:focus {
+  border-bottom-color: rgba(170, 240, 150, 0.9);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 4em;
+}

@@ -3,9 +3,12 @@ import { Dialog } from '@reach/dialog'
 import PropTypes from 'prop-types'
 
 import { configPropTypes } from '../utils'
+import Input, { Label } from './Input'
+import Checkbox from './Checkbox'
 import presets from '../presets'
 import styles from './ConfigForm.module.css'
 import Card from './Card'
+import Btn from './Btn'
 
 export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   const [message, setMessage] = useState(null)
@@ -93,154 +96,124 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
 
         <div className={styles.row}>
           <div className={styles.col}>
-            <div className={styles.field}>
-              <div className={styles.label}>Cargar preset:</div>
-              <div className={styles.presetRow}>
-                {Object.keys(presets).map((id) => (
-                  <button
-                    data-preset-id={id}
-                    onClick={handlePreset}
-                    type="button"
-                    key={`preset-${id}`}
-                  >
-                    {presets[id].label}
-                  </button>
-                ))}
-              </div>
+            <Label>Cargar preset</Label>
+            <div className={styles.presetRow}>
+              {Object.keys(presets).map((id) => (
+                <Btn
+                  data-preset-id={id}
+                  onClick={handlePreset}
+                  small
+                  key={`preset-${id}`}
+                >
+                  {presets[id].label}
+                </Btn>
+              ))}
             </div>
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="targetValue">
-                Escoba del:
-              </label>
-              <input
-                onChange={(e) =>
-                  setTargetValue(
-                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-                  )
-                }
-                required
-                value={targetValue}
-                type="number"
-                min="2"
-                id="targetValue"
-              />
-            </div>
+            <Input
+              label="Escoba del"
+              onChange={setTargetValue}
+              required
+              value={targetValue}
+              type="number"
+              min="2"
+              id="targetValue"
+              mt="1em"
+            />
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="playerCardsAmount">
-                Cantidad de cartas por jugador:
-              </label>
-              <input
-                onChange={(e) =>
-                  setPlayerCardsAmount(
-                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-                  )
-                }
-                required
-                value={playerCardsAmount}
-                type="number"
-                min="1"
-                id="playerCardsAmount"
-              />
-            </div>
+            <Input
+              label="Cantidad de cartas por jugador"
+              onChange={setPlayerCardsAmount}
+              required
+              value={playerCardsAmount}
+              type="number"
+              min="1"
+              id="playerCardsAmount"
+              mt="1em"
+            />
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="tableCardsAmount">
-                Cantidad de cartas en la mesa:
-              </label>
-              <input
-                onChange={(e) =>
-                  setTableCardsAmount(
-                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-                  )
-                }
-                required
-                value={tableCardsAmount}
-                type="number"
-                min="0"
-                id="tableCardsAmount"
-              />
-            </div>
+            <Input
+              label="Cantidad de cartas en la mesa"
+              onChange={setTableCardsAmount}
+              required
+              value={tableCardsAmount}
+              type="number"
+              min="0"
+              id="tableCardsAmount"
+              mt="1em"
+            />
           </div>
 
           <div className={styles.col}>
-            <div className={styles.field}>
-              <label className={styles.checkbox}>
+            <Input
+              label="Cartas del mazo"
+              onChange={setAvailableCards}
+              required
+              value={availableCards}
+              rows={2}
+              id="availableCards"
+              mb="1.5em"
+            />
+
+            <Label>Tipo de carta</Label>
+            <div className={styles.cardTypesContainer}>
+              <label className={styles.cardIcon} htmlFor="cardType-image">
                 <input
-                  onChange={(e) => setPauseOnAiPlay(e.target.checked)}
-                  checked={pauseOnAiPlay}
-                  type="checkbox"
-                />{' '}
-                Pausar cuando juega la máquina
+                  className="visuallyHidden"
+                  onChange={() => setCardType('image')}
+                  checked={cardType === 'image'}
+                  value="image"
+                  name="cardType"
+                  type="radio"
+                  id="cardType-image"
+                />
+                <Card
+                  isSelected={cardType === 'image'}
+                  onClick={() => setCardType('image')}
+                  value={5}
+                  type="image"
+                  id="image-icon"
+                />
+                <span className="visuallyHidden">Dibujos</span>
+              </label>
+              <label className={styles.cardIcon} htmlFor="cardType-number">
+                <input
+                  className="visuallyHidden"
+                  onChange={(e) => setCardType(e.target.value)}
+                  checked={cardType === 'number'}
+                  value="number"
+                  name="cardType"
+                  type="radio"
+                  id="cardType-number"
+                />
+                <Card
+                  isSelected={cardType === 'number'}
+                  onClick={() => setCardType('number')}
+                  value={5}
+                  type="number"
+                  id="number-icon"
+                />
+                <span className="visuallyHidden">Número</span>
               </label>
             </div>
 
-            <div className={styles.field}>
-              <div className={styles.label}>Tipo de carta:</div>
-              <div className={styles.cardTypesContainer}>
-                <label className={styles.label} htmlFor="cardType-image">
-                  <input
-                    className="visuallyHidden"
-                    onChange={() => setCardType('image')}
-                    checked={cardType === 'image'}
-                    value="image"
-                    name="cardType"
-                    type="radio"
-                    id="cardType-image"
-                  />
-                  <Card
-                    isSelected={cardType === 'image'}
-                    onClick={() => setCardType('image')}
-                    value={5}
-                    type="image"
-                    id="image-icon"
-                  />
-                  <span className="visuallyHidden">Dibujos</span>
-                </label>
-                <label className={styles.label} htmlFor="cardType-number">
-                  <input
-                    className="visuallyHidden"
-                    onChange={(e) => setCardType(e.target.value)}
-                    checked={cardType === 'number'}
-                    value="number"
-                    name="cardType"
-                    type="radio"
-                    id="cardType-number"
-                  />
-                  <Card
-                    isSelected={cardType === 'number'}
-                    onClick={() => setCardType('number')}
-                    value={5}
-                    type="number"
-                    id="number-icon"
-                  />
-                  <span className="visuallyHidden">Número</span>
-                </label>
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="availableCards">
-                Cartas del mazo:
-              </label>
-              <textarea
-                onChange={(e) => setAvailableCards(e.target.value)}
-                required
-                value={availableCards}
-                id="availableCards"
-              />
-            </div>
+            <Checkbox
+              onChange={setPauseOnAiPlay}
+              checked={pauseOnAiPlay}
+              mt="1.5em"
+            >
+              Pausar cuando juega la máquina
+            </Checkbox>
           </div>
         </div>
 
         {message && <p>{message}</p>}
 
         <div className={styles.controls}>
-          <button type="submit">Guardar</button>
-          <button type="button" onClick={onClose}>
+          <Btn type="submit">Guardar</Btn>
+          <Btn onClick={onClose} text>
             Cancelar
-          </button>
+          </Btn>
         </div>
       </form>
     </Dialog>

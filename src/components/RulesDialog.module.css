@@ -1,11 +1,15 @@
-.container.container {
+[data-reach-dialog-overlay] {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.container {
   background-color: transparent;
   padding: 0.5rem;
   width: auto;
 }
 
 @media (min-width: 400px) {
-  .container.container {
+  .container {
     max-width: 400px;
   }
 }
@@ -13,74 +17,48 @@
 .wrapper {
   border-radius: 0.5rem;
   background-color: rgb(83, 140, 83);
-  box-shadow: 0 1rem 2rem -1rem black;
+  box-shadow: 0 1rem 2rem -1rem #222;
   margin: 0 auto;
-  padding: 1rem 0.5rem;
+  padding: 1rem;
 }
 
 @media (min-width: 400px) {
   .wrapper {
-    padding: 2rem 2rem;
+    padding: 2rem;
   }
 }
 
 .title {
-  color: rgb(255, 255, 255);
+  color: var(--color-copy);
   font-weight: bold;
   text-transform: uppercase;
   font-size: 1em;
   letter-spacing: 2px;
-  margin: 0 0 2em;
+  margin: 0 0 1em;
+}
+
+@media (min-width: 400px) {
+  .title {
+    margin-bottom: 0 0 2em;
+  }
 }
 
 .container p {
   line-height: 1.5;
   font-size: 0.9rem;
+  color: var(--color-copy-weak);
 }
 
 .container strong {
-  color: rgb(255, 178, 0);
+  color: var(--color-copy-highlight);
   white-space: nowrap;
 }
 
-.doNotShowAgain {
+.checkboxContainer {
+  margin: 1.5rem 0;
   text-align: center;
-  display: block;
-  font-size: 0.8rem;
-  color: rgb(185, 208, 185);
-  cursor: pointer;
-  margin-top: 1.5rem;
 }
 
-.doNotShowAgain input {
-  margin-right: 0.5rem;
-  position: relative;
-  top: 2px;
-}
-
-.container button {
-  color: rgb(255, 255, 255);
-  font: inherit;
-  margin: 1.5em auto 0;
-  padding: 0.7em 2em;
-  background: rgba(255, 255, 255, 0.23);
-  border: 0.06em solid rgba(0, 0, 0, 0);
-  flex-basis: 0;
-  border-radius: 0.5em;
-  flex-grow: 1;
-  cursor: pointer;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  outline: none;
-  opacity: 0.9;
-  display: block;
-}
-
-.container button:hover {
-  opacity: 1;
-}
-
-.container button:focus {
-  opacity: 1;
-  border-color: rgb(78, 76, 93);
+.controls {
+  text-align: center;
 }
