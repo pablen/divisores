@@ -1,5 +1,9 @@
 # Registro de cambios
 
+## `v1.5.0`
+
+- Pistas: se puede activar que se resalte una posible jugada si el jugador no realizó ninguna luego de un tiempo configurable.
+
 ## `v1.4.0`
 
 - Animaciones!
