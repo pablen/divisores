@@ -38,7 +38,9 @@ export function getBestPlay(playerCards, tableCards, stack, targetValue) {
       (stackIndex) => stack[stackIndex] === requiredCardValue
     )
 
-    if (requiredCard) return [requiredCard, ...sortedCombinations[i]]
+    if (requiredCard !== undefined) {
+      return [requiredCard, ...sortedCombinations[i]]
+    }
   }
   return [
     playerCards.find(
