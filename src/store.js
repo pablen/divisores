@@ -66,7 +66,7 @@ export function reducer(state, action) {
     case 'config updated':
       return init({
         shuffledStack: action.payload.shuffledStack,
-        isPlayerTurn: action.payload.isPlayerTurn,
+        isPlayerTurn: state.isPlayerTurn,
         config: { ...state.config, ...action.payload.newConfig },
       })
 
