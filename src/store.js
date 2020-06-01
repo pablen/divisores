@@ -42,7 +42,7 @@ export function init({ shuffledStack, isPlayerTurn, config }) {
     aiSweeps: 0,
 
     isPlayerTurn,
-    message: null,
+    userMessage: null,
     config,
   }
 }
@@ -71,7 +71,7 @@ export function reducer(state, action) {
       })
 
     case 'player card selected':
-      return { ...state, selectedPlayerCard: action.payload, message: null }
+      return { ...state, selectedPlayerCard: action.payload, userMessage: null }
 
     case 'player card discarded':
       return {
@@ -80,7 +80,7 @@ export function reducer(state, action) {
         selectedPlayerCard: null,
         selectedTableCards: [],
         hint: [],
-        message: null,
+        userMessage: null,
         tableCards: [...state.tableCards, state.selectedPlayerCard],
         playerCards: state.playerCards.filter(
           (v) => v !== state.selectedPlayerCard
@@ -90,7 +90,7 @@ export function reducer(state, action) {
     case 'table card selected':
       return {
         ...state,
-        message: null,
+        userMessage: null,
         selectedTableCards: state.selectedTableCards.includes(action.payload)
           ? state.selectedTableCards.filter((v) => v !== action.payload)
           : [...state.selectedTableCards, action.payload],
@@ -106,7 +106,7 @@ export function reducer(state, action) {
       if (!isValidPlay) {
         return {
           ...state,
-          message: `Las cartas elegidas no suman ${state.config.targetValue}!`,
+          userMessage: `Las cartas elegidas no suman ${state.config.targetValue}!`,
         }
       }
 
@@ -130,7 +130,7 @@ export function reducer(state, action) {
         ],
         playerSweeps:
           tableCards.length === 0 ? state.playerSweeps + 1 : state.playerSweeps,
-        message: null,
+        userMessage: null,
         hint: [],
       }
     }

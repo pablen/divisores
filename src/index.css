@@ -6,7 +6,7 @@
   --color-copy-highlight: rgb(255, 178, 0);
 
   /* real playing cards dimensions are 62mm x 88mm */
-  --card-height: 15vh;
+  --card-height: 14vh;
   --card-width: 10vh;
 }
 

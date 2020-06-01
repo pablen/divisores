@@ -104,21 +104,29 @@ function Game({ initialConfig, showRules }) {
     hasAiCards,
   ])
 
-  const message = isGameFinished
+  const aiMessage =
+    isGameFinished || state.isPlayerTurn ? (
+      ''
+    ) : state.selectedAiCard === null ? (
+      'Esperando a que juege la máquina...'
+    ) : state.selectedTableCards.length === 0 ? (
+      `La máquina se descarta un ${state.shuffledStack[state.selectedAiCard]}`
+    ) : (
+      <>
+        La máquina juega{' '}
+        <span className={styles.condensed}>
+          {[
+            state.shuffledStack[state.selectedAiCard],
+            ...state.selectedTableCards.map((i) => state.shuffledStack[i]),
+          ].join(' + ')}{' '}
+          = {state.config.targetValue}
+        </span>
+      </>
+    )
+
+  const userMessage = isGameFinished
     ? ''
-    : state.message ||
-      (state.isPlayerTurn
-        ? 'Tu Turno'
-        : state.selectedAiCard !== null
-        ? state.selectedTableCards.length === 0
-          ? `La máquina se descarta un ${
-              state.shuffledStack[state.selectedAiCard]
-            }`
-          : `La máquina juega ${[
-              state.shuffledStack[state.selectedAiCard],
-              ...state.selectedTableCards.map((i) => state.shuffledStack[i]),
-            ].join(' + ')} = ${state.config.targetValue}`
-        : 'Esperando a que juege la máquina...')
+    : state.userMessage || (state.isPlayerTurn ? 'Tu Turno' : '')
 
   return (
     <div className={styles.container}>
@@ -155,6 +163,19 @@ function Game({ initialConfig, showRules }) {
               />
             ))}
           </div>
+        </section>
+
+        <section className={`${styles.messageSection} ${styles.aiMessage}`}>
+          {aiMessage}
+          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
+            <Btn
+              className={styles.okBtn}
+              autoFocus
+              onClick={() => dispatch({ type: 'ai play accepted' })}
+            >
+              OK
+            </Btn>
+          )}
         </section>
 
         <section
@@ -230,17 +251,8 @@ function Game({ initialConfig, showRules }) {
           )}
         </section>
 
-        <section className={styles.messageSection}>
-          {message}
-          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-            <Btn
-              className={styles.okBtn}
-              autoFocus
-              onClick={() => dispatch({ type: 'ai play accepted' })}
-            >
-              OK
-            </Btn>
-          )}
+        <section className={`${styles.messageSection} ${styles.userMessage}`}>
+          {userMessage}
         </section>
 
         <section className={styles.playerSection}>
