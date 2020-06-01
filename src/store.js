@@ -59,7 +59,7 @@ export function reducer(state, action) {
     case 'reset':
       return init({
         shuffledStack: action.payload.shuffledStack,
-        isPlayerTurn: action.payload.isPlayerTurn,
+        isPlayerTurn: !state.isPlayerTurn, // alternate first turn each game
         config: state.config,
       })
 

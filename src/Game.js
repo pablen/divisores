@@ -219,7 +219,6 @@ function Game({ initialConfig, showRules }) {
                       shuffledStack: utils.getShuffledStack(
                         state.config.availableCards
                       ),
-                      isPlayerTurn: utils.getRandomTurn(),
                     },
                   })
                 }
