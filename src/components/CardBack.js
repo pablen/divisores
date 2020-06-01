@@ -43,7 +43,7 @@ export default function CardBack({ ...props }) {
         height="80"
         rx="1.5"
         ry="1.5"
-        fill="url(./#pattern)"
+        fill="url(#pattern)"
         strokeWidth="0"
       />
     </svg>
