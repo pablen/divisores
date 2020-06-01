@@ -30,6 +30,16 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
 
   const [cardType, setCardType] = useState(currentConfig.cardType)
 
+  const [useHints, setUseHints] = useState(currentConfig.hintsDelay > 0)
+  const [hintsDelay, setHintsDelay] = useState(currentConfig.hintsDelay || 5)
+
+  const handleUseHintsToggle = useCallback((newValue) => {
+    if (newValue) {
+      setHintsDelay(5)
+    }
+    setUseHints(newValue)
+  }, [])
+
   const handlePreset = useCallback((e) => {
     const { options } = presets[e.target.dataset.presetId]
     setPlayerCardsAmount(options.playerCardsAmount)
@@ -37,6 +47,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
     setAvailableCards(options.availableCards.join(', '))
     setPauseOnAiPlay(options.pauseOnAiPlay)
     setTargetValue(options.targetValue)
+    setHintsDelay(options.hintsDelay)
     setCardType(options.cardType)
   }, [])
 
@@ -68,6 +79,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
         availableCards: parsedAvailableCards,
         pauseOnAiPlay,
         targetValue,
+        hintsDelay: useHints ? hintsDelay : 0,
         cardType,
       })
     },
@@ -77,8 +89,10 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
       availableCards,
       pauseOnAiPlay,
       targetValue,
+      hintsDelay,
       onSubmit,
       cardType,
+      useHints,
       onClose,
     ]
   )
@@ -118,7 +132,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               type="number"
               min="2"
               id="targetValue"
-              mt="1em"
+              mt="1.25em"
             />
 
             <Input
@@ -129,7 +143,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               type="number"
               min="1"
               id="playerCardsAmount"
-              mt="1em"
+              mt="1.25em"
             />
 
             <Input
@@ -140,7 +154,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               type="number"
               min="0"
               id="tableCardsAmount"
-              mt="1em"
+              mt="1.25em"
             />
           </div>
 
@@ -161,6 +175,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 <input
                   className="visuallyHidden"
                   onChange={() => setCardType('image')}
+                  tabIndex="-1"
                   checked={cardType === 'image'}
                   value="image"
                   name="cardType"
@@ -180,6 +195,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 <input
                   className="visuallyHidden"
                   onChange={(e) => setCardType(e.target.value)}
+                  tabIndex="-1"
                   checked={cardType === 'number'}
                   value="number"
                   name="cardType"
@@ -203,6 +219,28 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               mt="1.5em"
             >
               Pausar cuando juega la máquina
+            </Checkbox>
+
+            <Checkbox
+              onChange={handleUseHintsToggle}
+              checked={useHints}
+              mt="1em"
+            >
+              Mostrar pistas a los{' '}
+              <input
+                className={styles.hintDelayField}
+                onChange={(e) => {
+                  setHintsDelay(
+                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
+                  )
+                }}
+                disabled={!useHints}
+                required
+                value={hintsDelay}
+                type="number"
+                min="1"
+              />
+              segundos
             </Checkbox>
           </div>
         </div>

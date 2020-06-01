@@ -10,13 +10,18 @@ export default function Card({
   isReversed,
   isDisabled,
   isSelected,
+  isHinted,
   onClick,
   value,
   type,
   id,
 }) {
   const actualType = value > 10 ? 'number' : type || 'image'
-  const className = [styles.container, styles[`type-${actualType}`]].join(' ')
+  const className = [
+    styles.container,
+    styles[`type-${actualType}`],
+    isHinted ? styles.isHinted : '',
+  ].join(' ')
 
   return React.createElement(
     onClick ? motion.button : motion.div,
@@ -42,6 +47,7 @@ Card.propTypes = {
   isReversed: PropTypes.bool,
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
+  isHinted: PropTypes.bool,
   onClick: PropTypes.func,
   value: PropTypes.number.isRequired,
   type: PropTypes.oneOf(['number', 'image']),

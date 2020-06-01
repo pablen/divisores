@@ -39,3 +39,25 @@ button.container:focus .front rect {
 .front text {
   fill: rgb(102, 102, 102);
 }
+
+@keyframes pulse {
+  0% {
+    transform: scale3d(1, 1, 1);
+  }
+
+  10% {
+    transform: scale3d(1.05, 1.05, 1.05);
+  }
+
+  20% {
+    transform: scale3d(1, 1, 1);
+  }
+}
+
+.isHinted svg {
+  animation-duration: 5s;
+  animation-fill-mode: both;
+  animation-timing-function: ease-in-out;
+  animation-name: pulse;
+  animation-iteration-count: infinite;
+}

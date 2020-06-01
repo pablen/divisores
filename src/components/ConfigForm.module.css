@@ -87,9 +87,34 @@
 }
 
 .cardTypesContainer svg {
-  height: 90px;
+  height: 70px;
 }
 
 .controls {
   margin-top: 2rem;
+}
+
+.hintDelayField {
+  background: transparent;
+  font: inherit;
+  width: 40px;
+  color: var(--color-copy);
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 0;
+  padding: 0;
+  margin: 0 4px 0 0;
+  outline: none;
+  text-align: center;
+}
+
+.hintDelayField:not([disabled]):hover,
+.hintDelayField:focus {
+  border-bottom-color: rgba(170, 240, 150, 0.9);
+}
+
+.hintDelayField[disabled] {
+  cursor: not-allowed;
+  border-bottom-color: rgba(170, 240, 150, 0.2);
+  color: rgba(255, 255, 255, 0.5);
 }

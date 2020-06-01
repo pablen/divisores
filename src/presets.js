@@ -10,6 +10,7 @@ export default {
       playerCardsAmount: 3,
       cardType: 'image',
       pauseOnAiPlay: true,
+      hintsDelay: 5,
     },
   },
 
@@ -24,6 +25,7 @@ export default {
       playerCardsAmount: 3,
       cardType: 'image',
       pauseOnAiPlay: true,
+      hintsDelay: 5,
     },
   },
 
@@ -38,6 +40,7 @@ export default {
       playerCardsAmount: 3,
       cardType: 'number',
       pauseOnAiPlay: true,
+      hintsDelay: 5,
     },
   },
 }

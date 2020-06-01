@@ -28,7 +28,12 @@ export default function Checkbox({
       {...(mt || mb ? inlineStyles : {})}
       {...labelProps}
     >
-      <input type="checkbox" onChange={handleChange} {...other} />
+      <input
+        className={styles.input}
+        onChange={handleChange}
+        type="checkbox"
+        {...other}
+      />
       {children}
     </label>
   )

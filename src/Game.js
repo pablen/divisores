@@ -1,4 +1,4 @@
-import React, { useReducer, useEffect, useState } from 'react'
+import React, { useReducer, useEffect, useState, useRef } from 'react'
 import { AnimateSharedLayout } from 'framer-motion'
 import PropTypes from 'prop-types'
 
@@ -58,6 +58,18 @@ function Game({ initialConfig, showRules }) {
     state.isPlayerTurn &&
     state.selectedPlayerCard !== null &&
     state.selectedTableCards.length > 0
+
+  const timer = useRef(null)
+  useEffect(() => {
+    if (state.config.hintsDelay > 0 && state.isPlayerTurn && hasPlayerCards) {
+      timer.current = setTimeout(
+        () => dispatch({ type: 'hint requested' }),
+        state.config.hintsDelay * 1000
+      )
+    } else {
+      clearTimeout(timer.current)
+    }
+  }, [state.isPlayerTurn, hasPlayerCards, state.config.hintsDelay])
 
   useEffect(() => {
     if (state.selectedAiCard !== null && !state.config.pauseOnAiPlay) {
@@ -170,6 +182,7 @@ function Game({ initialConfig, showRules }) {
               <Card
                 isSelected={state.selectedTableCards.includes(card)}
                 isDisabled={isGameFinished || !state.isPlayerTurn}
+                isHinted={state.hint.includes(card)}
                 onClick={() =>
                   dispatch({ type: 'table card selected', payload: card })
                 }
@@ -237,6 +250,7 @@ function Game({ initialConfig, showRules }) {
               <Card
                 isSelected={state.selectedPlayerCard === card}
                 isDisabled={!state.isPlayerTurn}
+                isHinted={state.hint.includes(card)}
                 onClick={() =>
                   dispatch({ type: 'player card selected', payload: card })
                 }

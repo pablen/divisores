@@ -36,6 +36,8 @@ export function init({ shuffledStack, isPlayerTurn, config }) {
     playerStack: [],
     aiStack: [],
 
+    hint: [],
+
     playerSweeps: 0,
     aiSweeps: 0,
 
@@ -77,6 +79,7 @@ export function reducer(state, action) {
         isPlayerTurn: false,
         selectedPlayerCard: null,
         selectedTableCards: [],
+        hint: [],
         message: null,
         tableCards: [...state.tableCards, state.selectedPlayerCard],
         playerCards: state.playerCards.filter(
@@ -128,7 +131,18 @@ export function reducer(state, action) {
         playerSweeps:
           tableCards.length === 0 ? state.playerSweeps + 1 : state.playerSweeps,
         message: null,
+        hint: [],
       }
+    }
+
+    case 'hint requested': {
+      const hint = utils.getBestPlay(
+        state.playerCards,
+        state.tableCards,
+        state.shuffledStack,
+        state.config.targetValue
+      )
+      return hint.length > 1 ? { ...state, hint } : state
     }
 
     case 'ai play requested': {

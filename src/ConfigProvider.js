@@ -65,6 +65,10 @@ function getLocalConfig(params) {
       typeof params.pauseOnAiPlay === 'boolean'
         ? params.pauseOnAiPlay
         : baseConfig.pauseOnAiPlay,
+    hintsDelay:
+      typeof params.hintsDelay === 'number'
+        ? params.hintsDelay
+        : baseConfig.hintsDelay,
   }
 }
 

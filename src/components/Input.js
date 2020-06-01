@@ -73,7 +73,7 @@ Input.propTypes = {
   className: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   label: PropTypes.string.isRequired,
-  type: PropTypes.oneOf(['text', 'number']).isRequired,
+  type: PropTypes.oneOf(['text', 'number']),
   rows: PropTypes.number,
   id: PropTypes.string.isRequired,
   mt: PropTypes.string,
