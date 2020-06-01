@@ -1,5 +1,11 @@
 # Registro de cambios
 
+## `v1.4.0`
+
+- Animaciones!
+- El usuario puede elegir no volver a mostrar las reglas del juego al inicio
+- Mejoras de visualización en pantallas de distintos tamaños
+
 ## `v1.3.0`
 
 - Soporte para distintas configuraciones iniciales a través de parámetros de URL
