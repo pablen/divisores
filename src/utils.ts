@@ -1,8 +1,6 @@
 import combinations from 'combinations'
 import PropTypes from 'prop-types'
 
-import { ConfigOptions } from './presets'
-
 /** The card index in shuffledStack. It serves the purpose of a card ID. */
 export type CardIndex = number
 
@@ -15,12 +13,6 @@ export const configPropTypes = PropTypes.shape({
   hintsDelay: PropTypes.number.isRequired,
   cardType: PropTypes.oneOf<'image' | 'number'>(['image', 'number']).isRequired,
 })
-
-export function getShuffledStack(
-  availableCards: ConfigOptions['availableCards']
-): ConfigOptions['availableCards'] {
-  return [...availableCards].sort(() => Math.random() * 2 - 1)
-}
 
 export function getRandomTurn(): boolean {
   return Math.random() >= 0.5

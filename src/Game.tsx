@@ -6,6 +6,7 @@ import React, {
   useRef,
 } from 'react'
 import { AnimateSharedLayout } from 'framer-motion'
+import arrayShuffle from 'array-shuffle'
 import PropTypes from 'prop-types'
 
 import { ConfigOptions } from './presets'
@@ -32,7 +33,7 @@ const Game: React.FC<Props> = ({ initialConfig, showRules }) => {
   const [state, dispatch] = useReducer(
     reducer,
     {
-      shuffledStack: utils.getShuffledStack(initialConfig.availableCards),
+      shuffledStack: arrayShuffle(initialConfig.availableCards),
       isPlayerTurn: utils.getRandomTurn(),
       config: initialConfig,
     },
@@ -152,7 +153,7 @@ const Game: React.FC<Props> = ({ initialConfig, showRules }) => {
       dispatch({
         type: 'reset',
         payload: {
-          shuffledStack: utils.getShuffledStack(state.config.availableCards),
+          shuffledStack: arrayShuffle(state.config.availableCards),
         },
       }),
     [state.config.availableCards]
@@ -175,7 +176,7 @@ const Game: React.FC<Props> = ({ initialConfig, showRules }) => {
       dispatch({
         type: 'config updated',
         payload: {
-          shuffledStack: utils.getShuffledStack(newConfig.availableCards),
+          shuffledStack: arrayShuffle(newConfig.availableCards),
           newConfig,
         },
       }),
