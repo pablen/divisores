@@ -1,19 +1,26 @@
-import React, { useReducer, useEffect, useState, useRef } from 'react'
+import React, {
+  useCallback,
+  useReducer,
+  useEffect,
+  useState,
+  useRef,
+} from 'react'
 import { AnimateSharedLayout } from 'framer-motion'
 import PropTypes from 'prop-types'
 
+import { ConfigOptions } from './presets'
 import { init, reducer } from './store'
 import CardPlaceholder from './components/CardPlaceholder'
 import RulesDialog from './components/RulesDialog'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
 import ScoreBoard from './components/ScoreBoard'
-import Btn from './components/Btn'
 import * as utils from './utils'
 import styles from './Game.module.css'
 import Card from './components/Card'
+import Btn from './components/Btn'
 
-function Game({ initialConfig, showRules }) {
+const Game: React.FC<Props> = ({ initialConfig, showRules }) => {
   useEffect(() => {
     console.log(
       '%cInitial configuration',
@@ -59,7 +66,7 @@ function Game({ initialConfig, showRules }) {
     state.selectedPlayerCard !== null &&
     state.selectedTableCards.length > 0
 
-  const timer = useRef(null)
+  const timer = useRef<NodeJS.Timeout | null>(null)
   useEffect(() => {
     if (state.config.hintsDelay > 0 && state.isPlayerTurn && hasPlayerCards) {
       timer.current = setTimeout(
@@ -67,7 +74,7 @@ function Game({ initialConfig, showRules }) {
         state.config.hintsDelay * 1000
       )
     } else {
-      clearTimeout(timer.current)
+      if (timer.current !== null) clearTimeout(timer.current)
     }
   }, [state.isPlayerTurn, hasPlayerCards, state.config.hintsDelay])
 
@@ -96,7 +103,6 @@ function Game({ initialConfig, showRules }) {
       )
     }
   }, [
-    state.config.aiPlayDelay,
     state.isPlayerTurn,
     isGameFinished,
     hasPlayerCards,
@@ -128,11 +134,59 @@ function Game({ initialConfig, showRules }) {
     ? ''
     : state.userMessage || (state.isPlayerTurn ? 'Tu Turno' : '')
 
+  const handleConfigClick = useCallback(() => setIsConfigVisible((s) => !s), [])
+  const handleOkClick = useCallback(
+    () => dispatch({ type: 'ai play accepted' }),
+    []
+  )
+  const handleTableCardSelected = useCallback(
+    (cardId) =>
+      dispatch({
+        type: 'table card selected',
+        payload: cardId,
+      }),
+    []
+  )
+  const handlePlayAgain = useCallback(
+    () =>
+      dispatch({
+        type: 'reset',
+        payload: {
+          shuffledStack: utils.getShuffledStack(state.config.availableCards),
+        },
+      }),
+    [state.config.availableCards]
+  )
+  const handlePlayerCardSelected = useCallback(
+    (cardId) => dispatch({ type: 'player card selected', payload: cardId }),
+    []
+  )
+  const handlePlayOrDiscard = useCallback(
+    () =>
+      dispatch({
+        type: canPlay ? 'play attempted' : 'player card discarded',
+      }),
+    [canPlay]
+  )
+  const handleRulesDialogClose = useCallback(() => setIsRulesVisible(false), [])
+  const handleConfigFormClose = useCallback(() => setIsConfigVisible(false), [])
+  const handleConfigUpdated = useCallback(
+    (newConfig: ConfigOptions) =>
+      dispatch({
+        type: 'config updated',
+        payload: {
+          shuffledStack: utils.getShuffledStack(newConfig.availableCards),
+          newConfig,
+        },
+      }),
+    []
+  )
+
   return (
     <div className={styles.container}>
       <button
         className={styles.configBtn}
-        onClick={() => setIsConfigVisible((s) => !s)}
+        onClick={handleConfigClick}
         title="Configuración"
         type="button"
       >
@@ -149,7 +203,7 @@ function Game({ initialConfig, showRules }) {
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
                 key={`card-${card}`}
-                id={`card-${card}`}
+                id={card}
               />
             ))}
           </div>
@@ -159,7 +213,7 @@ function Game({ initialConfig, showRules }) {
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
                 key={`card-${card}`}
-                id={`card-${card}`}
+                id={card}
               />
             ))}
           </div>
@@ -168,11 +222,7 @@ function Game({ initialConfig, showRules }) {
         <section className={`${styles.messageSection} ${styles.aiMessage}`}>
           {aiMessage}
           {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-            <Btn
-              className={styles.okBtn}
-              autoFocus
-              onClick={() => dispatch({ type: 'ai play accepted' })}
-            >
+            <Btn className={styles.okBtn} autoFocus onClick={handleOkClick}>
               OK
             </Btn>
           )}
@@ -193,7 +243,7 @@ function Game({ initialConfig, showRules }) {
                   value={state.shuffledStack[card]}
                   type={state.config.cardType}
                   key={`card-${card}`}
-                  id={`card-${card}`}
+                  id={card}
                 />
               ))}
             </div>
@@ -204,13 +254,11 @@ function Game({ initialConfig, showRules }) {
                 isSelected={state.selectedTableCards.includes(card)}
                 isDisabled={isGameFinished || !state.isPlayerTurn}
                 isHinted={state.hint.includes(card)}
-                onClick={() =>
-                  dispatch({ type: 'table card selected', payload: card })
-                }
+                onClick={handleTableCardSelected}
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
                 key={`card-${card}`}
-                id={`card-${card}`}
+                id={card}
               />
             ))}
           </div>
@@ -231,20 +279,7 @@ function Game({ initialConfig, showRules }) {
                 aiSweeps={state.aiSweeps}
                 aiPoints={aiPoints}
               />
-              <Btn
-                autoFocus
-                onClick={() =>
-                  dispatch({
-                    type: 'reset',
-                    payload: {
-                      shuffledStack: utils.getShuffledStack(
-                        state.config.availableCards
-                      ),
-                    },
-                  })
-                }
-                type="button"
-              >
+              <Btn autoFocus onClick={handlePlayAgain} type="button">
                 Jugar De Nuevo
               </Btn>
             </div>
@@ -262,13 +297,11 @@ function Game({ initialConfig, showRules }) {
                 isSelected={state.selectedPlayerCard === card}
                 isDisabled={!state.isPlayerTurn}
                 isHinted={state.hint.includes(card)}
-                onClick={() =>
-                  dispatch({ type: 'player card selected', payload: card })
-                }
+                onClick={handlePlayerCardSelected}
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
                 key={`card-${card}`}
-                id={`card-${card}`}
+                id={card}
               />
             ))}
           </div>
@@ -278,7 +311,7 @@ function Game({ initialConfig, showRules }) {
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
                 key={`card-${card}`}
-                id={`card-${card}`}
+                id={card}
               />
             ))}
           </div>
@@ -289,11 +322,7 @@ function Game({ initialConfig, showRules }) {
             <Btn
               className={styles.controlBtn}
               disabled={!canPlay && !canDiscard}
-              onClick={() =>
-                dispatch({
-                  type: canPlay ? 'play attempted' : 'player card discarded',
-                })
-              }
+              onClick={handlePlayOrDiscard}
               type="button"
             >
               {canPlay ? 'Jugar' : 'Descartar'}
@@ -305,32 +334,28 @@ function Game({ initialConfig, showRules }) {
       {isRulesVisible && (
         <RulesDialog
           currentConfig={state.config}
-          onClose={() => setIsRulesVisible(false)}
+          onClose={handleRulesDialogClose}
         />
       )}
 
       {isConfigVisible && (
         <ConfigForm
           currentConfig={state.config}
-          onSubmit={(newConfig) =>
-            dispatch({
-              type: 'config updated',
-              payload: {
-                shuffledStack: utils.getShuffledStack(newConfig.availableCards),
-                newConfig,
-              },
-            })
-          }
-          onClose={() => setIsConfigVisible(false)}
+          onSubmit={handleConfigUpdated}
+          onClose={handleConfigFormClose}
         />
       )}
     </div>
   )
 }
 
-Game.propTypes = {
+const GamePropTypes = {
   initialConfig: utils.configPropTypes.isRequired,
   showRules: PropTypes.bool.isRequired,
 }
+
+Game.propTypes = GamePropTypes
+
+type Props = PropTypes.InferProps<typeof GamePropTypes>
 
 export default Game

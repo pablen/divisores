@@ -1,53 +1,107 @@
+import { getBestPlay, CardIndex } from './utils'
 import { isDebugEnabled } from './config'
-import * as utils from './utils'
+import { ConfigOptions } from './presets'
 
-const range = (start, amount) => Array.from(Array(amount), (_, i) => i + start)
+export type State = {
+  config: ConfigOptions
+  isPlayerTurn: boolean
 
-export function init({ shuffledStack, isPlayerTurn, config }) {
-  if (
-    config.tableCardsAmount + 2 * config.playerCardsAmount >
-    config.availableCards.length
-  ) {
-    throw new Error('Insufficient cards in stack')
-  }
-  return {
-    playerCards: range(0, config.playerCardsAmount),
-    tableCards: range(2 * config.playerCardsAmount, config.tableCardsAmount),
-    aiCards: range(config.playerCardsAmount, config.playerCardsAmount),
+  /** A copy of availableCards that is randomly sorted at the start of each game */
+  shuffledStack: ConfigOptions['availableCards']
 
-    stackCards: range(
-      2 * config.playerCardsAmount + config.tableCardsAmount,
-      Math.floor(
-        (shuffledStack.length -
-          config.tableCardsAmount -
-          2 * config.playerCardsAmount) /
-          (2 * config.playerCardsAmount)
-      ) *
-        2 *
-        config.playerCardsAmount
-    ),
+  /**
+   * The cards currently on the game deck.
+   * Referenced as indices of the shuffledStack
+   */
+  stackCards: CardIndex[]
 
-    shuffledStack,
+  /**
+   * The cards currently on the table.
+   * Referenced as indices of the shuffledStack
+   */
+  tableCards: CardIndex[]
 
-    selectedTableCards: [],
-    selectedPlayerCard: null,
-    selectedAiCard: null,
+  /**
+   * The cards in the player hand.
+   * Referenced as indices of the shuffledStack
+   */
+  playerCards: CardIndex[]
 
-    playerStack: [],
-    aiStack: [],
+  /**
+   * The cards in AI hand.
+   * Referenced as indices of the shuffledStack
+   */
+  aiCards: CardIndex[]
 
-    hint: [],
+  /**
+   * The cards picked up by player plays.
+   * Referenced as indices of the shuffledStack
+   */
+  playerStack: CardIndex[]
 
-    playerSweeps: 0,
-    aiSweeps: 0,
+  /**
+   * The cards picked up by AI plays.
+   * Referenced as indices of the shuffledStack
+   */
+  aiStack: CardIndex[]
 
-    isPlayerTurn,
-    userMessage: null,
-    config,
-  }
+  /**
+   * The cards for the best possible user play (if any).
+   * Referenced as indices of the shuffledStack
+   */
+  hint: CardIndex[]
+
+  /**
+   * Table cards selected for the current play (IA or player).
+   * Referenced as indices of the shuffledStack
+   */
+  selectedTableCards: CardIndex[]
+
+  /**
+   * Player card selected for the current play.
+   * Referenced a an index of the shuffledStack
+   */
+  selectedPlayerCard: CardIndex | null
+
+  /**
+   * AI card selected for the current play.
+   * Referenced an index of the shuffledStack
+   */
+  selectedAiCard: CardIndex | null
+
+  /** The amount of player sweeps */
+  playerSweeps: number
+
+  /** The amount of AI sweeps */
+  aiSweeps: number
+
+  /** Optional feedback for the player */
+  userMessage: string | null
 }
 
-export function reducer(state, action) {
+export type Action =
+  | {
+      type: 'reset'
+      payload: { shuffledStack: ConfigOptions['availableCards'] }
+    }
+  | {
+      type: 'config updated'
+      payload: {
+        shuffledStack: ConfigOptions['availableCards']
+        newConfig: ConfigOptions
+      }
+    }
+  | { type: 'player card discarded' }
+  | { type: 'player card selected'; payload: CardIndex }
+  | { type: 'table card selected'; payload: CardIndex }
+  | { type: 'new cards requested' }
+  | { type: 'ai play requested' }
+  | { type: 'ai play accepted' }
+  | { type: 'play attempted' }
+  | { type: 'hint requested' }
+  | { type: 'ai played' }
+
+export function reducer(state: State, action: Action): State {
   if (isDebugEnabled) {
     console.groupCollapsed(action.type)
     console.log('%cAction:', 'color: #00A7F7; font-weight: 700;', action)
@@ -74,6 +128,9 @@ export function reducer(state, action) {
       return { ...state, selectedPlayerCard: action.payload, userMessage: null }
 
     case 'player card discarded':
+      if (typeof state.selectedPlayerCard !== 'number') {
+        throw new Error('Cannot discard card. None selected.')
+      }
       return {
         ...state,
         isPlayerTurn: false,
@@ -97,6 +154,9 @@ export function reducer(state, action) {
       }
 
     case 'play attempted': {
+      if (typeof state.selectedPlayerCard !== 'number') {
+        throw new Error('Cannot execute play. No player card selected.')
+      }
       const isValidPlay =
         state.selectedTableCards.reduce(
           (acc, current) => acc + state.shuffledStack[current],
@@ -136,7 +196,7 @@ export function reducer(state, action) {
     }
 
     case 'hint requested': {
-      const hint = utils.getBestPlay(
+      const hint = getBestPlay(
         state.playerCards,
         state.tableCards,
         state.shuffledStack,
@@ -146,7 +206,7 @@ export function reducer(state, action) {
     }
 
     case 'ai play requested': {
-      const [cardIndex, ...tableIndixes] = utils.getBestPlay(
+      const [cardIndex, ...tableIndixes] = getBestPlay(
         state.aiCards,
         state.tableCards,
         state.shuffledStack,
@@ -162,6 +222,9 @@ export function reducer(state, action) {
 
     case 'ai play accepted':
     case 'ai played': {
+      if (typeof state.selectedAiCard !== 'number') {
+        throw new Error('Cannot execute play. No AI card selected.')
+      }
       if (state.selectedTableCards.length === 0) {
         return {
           ...state,
@@ -202,8 +265,57 @@ export function reducer(state, action) {
           2 * state.config.playerCardsAmount
         ),
       }
+  }
+}
 
-    default:
-      throw new Error(`Unknown action type ${action.type}`)
+function range(start: number, amount: number): number[] {
+  return Array.from(Array(amount), (_, i) => i + start)
+}
+
+export function init({
+  shuffledStack,
+  isPlayerTurn,
+  config,
+}: Pick<State, 'shuffledStack' | 'isPlayerTurn' | 'config'>): State {
+  if (
+    config.tableCardsAmount + 2 * config.playerCardsAmount >
+    config.availableCards.length
+  ) {
+    throw new Error('Insufficient cards in stack')
+  }
+  return {
+    playerCards: range(0, config.playerCardsAmount),
+    tableCards: range(2 * config.playerCardsAmount, config.tableCardsAmount),
+    aiCards: range(config.playerCardsAmount, config.playerCardsAmount),
+
+    stackCards: range(
+      2 * config.playerCardsAmount + config.tableCardsAmount,
+      Math.floor(
+        (shuffledStack.length -
+          config.tableCardsAmount -
+          2 * config.playerCardsAmount) /
+          (2 * config.playerCardsAmount)
+      ) *
+        2 *
+        config.playerCardsAmount
+    ),
+
+    shuffledStack,
+
+    selectedTableCards: [],
+    selectedPlayerCard: null,
+    selectedAiCard: null,
+
+    playerStack: [],
+    aiStack: [],
+
+    hint: [],
+
+    playerSweeps: 0,
+    aiSweeps: 0,
+
+    isPlayerTurn,
+    userMessage: null,
+    config,
   }
 }

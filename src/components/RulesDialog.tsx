@@ -7,7 +7,7 @@ import Checkbox from './Checkbox'
 import styles from './RulesDialog.module.css'
 import Btn from './Btn'
 
-export default function RulesDialog({ onClose, currentConfig }) {
+const RulesDialog: React.FC<Props> = ({ onClose, currentConfig }) => {
   const [doNotShowAgain, setDoNotShowAgain] = useState(false)
 
   const handleStart = useCallback(() => {
@@ -62,7 +62,13 @@ export default function RulesDialog({ onClose, currentConfig }) {
   )
 }
 
-RulesDialog.propTypes = {
+const RulesDialogPropTypes = {
   currentConfig: configPropTypes.isRequired,
   onClose: PropTypes.func.isRequired,
 }
+
+RulesDialog.propTypes = RulesDialogPropTypes
+
+type Props = PropTypes.InferProps<typeof RulesDialogPropTypes>
+
+export default RulesDialog

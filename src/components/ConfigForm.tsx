@@ -5,31 +5,35 @@ import PropTypes from 'prop-types'
 import { configPropTypes } from '../utils'
 import Input, { Label } from './Input'
 import Checkbox from './Checkbox'
-import presets from '../presets'
+import presets, { PresetName } from '../presets'
 import styles from './ConfigForm.module.css'
 import Card from './Card'
 import Btn from './Btn'
 
-export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
-  const [message, setMessage] = useState(null)
+const ConfigForm: React.FC<Props> = ({ onClose, onSubmit, currentConfig }) => {
+  const [message, setMessage] = useState<string | null>(null)
 
   const [pauseOnAiPlay, setPauseOnAiPlay] = useState(
     currentConfig.pauseOnAiPlay
   )
-  const [playerCardsAmount, setPlayerCardsAmount] = useState(
-    currentConfig.playerCardsAmount
-  )
-  const [tableCardsAmount, setTableCardsAmount] = useState(
+
+  const [playerCardsAmount, setPlayerCardsAmount] = useState<
+    number | undefined
+  >(currentConfig.playerCardsAmount)
+
+  const [tableCardsAmount, setTableCardsAmount] = useState<number | undefined>(
     currentConfig.tableCardsAmount
   )
+
   const [availableCards, setAvailableCards] = useState(
     currentConfig.availableCards.join(', ')
   )
 
-  const [targetValue, setTargetValue] = useState(currentConfig.targetValue)
+  const [targetValue, setTargetValue] = useState<number | undefined>(
+    currentConfig.targetValue
+  )
 
   const [cardType, setCardType] = useState(currentConfig.cardType)
-
   const [useHints, setUseHints] = useState(currentConfig.hintsDelay > 0)
   const [hintsDelay, setHintsDelay] = useState(currentConfig.hintsDelay || 5)
 
@@ -40,29 +44,47 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
     setUseHints(newValue)
   }, [])
 
-  const handlePreset = useCallback((e) => {
-    const { options } = presets[e.target.dataset.presetId]
-    setPlayerCardsAmount(options.playerCardsAmount)
-    setTableCardsAmount(options.tableCardsAmount)
-    setAvailableCards(options.availableCards.join(', '))
-    setPauseOnAiPlay(options.pauseOnAiPlay)
-    setTargetValue(options.targetValue)
-    setHintsDelay(options.hintsDelay)
-    setCardType(options.cardType)
-  }, [])
+  const handlePreset: React.MouseEventHandler<HTMLButtonElement> = useCallback(
+    (ev) => {
+      if (typeof ev.currentTarget.dataset.presetId !== 'string') return
+      const { options } = presets[
+        ev.currentTarget.dataset.presetId as PresetName
+      ]
+      setPlayerCardsAmount(options.playerCardsAmount)
+      setTableCardsAmount(options.tableCardsAmount)
+      setAvailableCards(options.availableCards.join(', '))
+      setPauseOnAiPlay(options.pauseOnAiPlay)
+      setTargetValue(options.targetValue)
+      setHintsDelay(options.hintsDelay)
+      setCardType(options.cardType)
+    },
+    []
+  )
 
   const handleSubmit = useCallback(
-    (e) => {
-      e.preventDefault()
+    (ev) => {
+      ev.preventDefault()
       const parsedAvailableCards = availableCards
         .split(',')
         .map((v) => parseInt(v, 10))
         .filter((v) => v && v >= 0)
+      if (tableCardsAmount === undefined) {
+        setMessage('La cantidad de cartas en la mesa es requerida')
+        return
+      }
+      if (playerCardsAmount === undefined) {
+        setMessage('La cantidad de cartas por jugador es requerida')
+        return
+      }
       if (
         tableCardsAmount + 2 * playerCardsAmount >
         parsedAvailableCards.length
       ) {
         setMessage('Se necesitan más cartas en el mazo')
+        return
+      }
+      if (targetValue === undefined) {
+        setMessage('El valor de la Escoba es requerido')
         return
       }
       if (parsedAvailableCards.some((v) => v >= targetValue)) {
@@ -97,6 +119,15 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
     ]
   )
 
+  const handleImageCardTypeSelect = useCallback(() => setCardType('image'), [])
+  const handleNumberCardTypeSelect = useCallback(
+    () => setCardType('number'),
+    []
+  )
+  const handleHintDelayChange = useCallback((ev) => {
+    setHintsDelay(isNaN(ev.target.valueAsNumber) ? '' : ev.target.valueAsNumber)
+  }, [])
+
   return (
     <Dialog
       aria-labelledby="dialog-title"
@@ -112,7 +143,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
           <div className={styles.col}>
             <Label>Cargar preset</Label>
             <div className={styles.presetRow}>
-              {Object.keys(presets).map((id) => (
+              {(Object.keys(presets) as PresetName[]).map((id) => (
                 <Btn
                   data-preset-id={id}
                   onClick={handlePreset}
@@ -163,6 +194,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               label="Cartas del mazo"
               onChange={setAvailableCards}
               required
+              type="text"
               value={availableCards}
               rows={2}
               id="availableCards"
@@ -174,8 +206,8 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               <label className={styles.cardIcon} htmlFor="cardType-image">
                 <input
                   className="visuallyHidden"
-                  onChange={() => setCardType('image')}
-                  tabIndex="-1"
+                  onChange={handleImageCardTypeSelect}
+                  tabIndex={-1}
                   checked={cardType === 'image'}
                   value="image"
                   name="cardType"
@@ -184,18 +216,18 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 />
                 <Card
                   isSelected={cardType === 'image'}
-                  onClick={() => setCardType('image')}
+                  onClick={handleImageCardTypeSelect}
                   value={5}
                   type="image"
-                  id="image-icon"
+                  id={-1}
                 />
                 <span className="visuallyHidden">Dibujos</span>
               </label>
               <label className={styles.cardIcon} htmlFor="cardType-number">
                 <input
                   className="visuallyHidden"
-                  onChange={(e) => setCardType(e.target.value)}
-                  tabIndex="-1"
+                  onChange={handleNumberCardTypeSelect}
+                  tabIndex={-1}
                   checked={cardType === 'number'}
                   value="number"
                   name="cardType"
@@ -204,10 +236,10 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
                 />
                 <Card
                   isSelected={cardType === 'number'}
-                  onClick={() => setCardType('number')}
+                  onClick={handleNumberCardTypeSelect}
                   value={5}
                   type="number"
-                  id="number-icon"
+                  id={-2}
                 />
                 <span className="visuallyHidden">Número</span>
               </label>
@@ -229,11 +261,7 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
               Mostrar pistas a los{' '}
               <input
                 className={styles.hintDelayField}
-                onChange={(e) => {
-                  setHintsDelay(
-                    isNaN(e.target.valueAsNumber) ? '' : e.target.valueAsNumber
-                  )
-                }}
+                onChange={handleHintDelayChange}
                 disabled={!useHints}
                 required
                 value={hintsDelay}
@@ -258,8 +286,14 @@ export default function ConfigForm({ onClose, onSubmit, currentConfig }) {
   )
 }
 
-ConfigForm.propTypes = {
+const ConfigFormPropTypes = {
   currentConfig: configPropTypes.isRequired,
   onSubmit: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
 }
+
+ConfigForm.propTypes = ConfigFormPropTypes
+
+type Props = PropTypes.InferProps<typeof ConfigFormPropTypes>
+
+export default ConfigForm

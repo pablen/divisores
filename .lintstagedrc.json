@@ -1,4 +1,4 @@
 {
-  "*.js": ["eslint --max-warnings=0 --cache"],
-  "*.{js,css,md}": "prettier --write"
+  "*.{js,jsx,ts,tsx}": ["eslint --max-warnings=0 --cache"],
+  "*.{js,jsx,ts,tsx,css,md}": "prettier --write"
 }

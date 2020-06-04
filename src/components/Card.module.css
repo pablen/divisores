@@ -22,16 +22,16 @@ button.container:not([disabled]):hover {
   stroke: rgb(192, 192, 192);
 }
 
-button.container:not([disabled]):not([aria-selected='true']):hover .front rect {
+button.container:not([disabled]):not([aria-pressed='true']):hover .front rect {
   fill: rgb(230, 230, 230);
 }
 
-.container[aria-selected='true'] .front rect {
+.container[aria-pressed='true'] .front rect {
   fill: rgb(251, 233, 146);
   stroke: rgb(251, 192, 146);
 }
 
-button.container[aria-selected='true']:focus .front rect,
+button.container[aria-pressed='true']:focus .front rect,
 button.container:focus .front rect {
   stroke: rgb(78, 76, 93);
 }

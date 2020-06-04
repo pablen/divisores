@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import FireStoreParser from 'firestore-parser'
-import qs from 'query-string'
+import { parse } from 'query-string'
 
 import { roomsApiUrlPattern, defaultConfig } from './config'
-import presets from './presets'
+import presets, { ConfigOptions, PresetName } from './presets'
 import Game from './Game'
 
-function getRoomConfig(roomId) {
+function getRoomConfig(roomId: string): Promise<ConfigOptions> {
   return fetch(roomsApiUrlPattern.replace('{roomId}', roomId))
     .then((res) => res.json())
-    .then((json) => FireStoreParser(json).fields.config)
+    .then(
+      (json) =>
+        FireStoreParser<{ fields: { config: ConfigOptions } }>(json).fields
+          .config
+    )
     .then((roomConfig) => {
       console.log(
         `Fetched remote configuration for room "${roomId}"`,
@@ -19,10 +23,15 @@ function getRoomConfig(roomId) {
     })
 }
 
-function getLocalConfig(params) {
-  const baseConfig = presets[params.preset]
-    ? presets[params.preset].options
-    : defaultConfig
+interface QueryStringParams extends Partial<ConfigOptions> {
+  preset?: PresetName
+}
+
+function getLocalConfig(params: QueryStringParams): ConfigOptions {
+  const baseConfig =
+    typeof params.preset === 'string' && presets[params.preset]
+      ? presets[params.preset].options
+      : defaultConfig
 
   const playerCardsAmount =
     typeof params.playerCardsAmount === 'number' && params.playerCardsAmount > 0
@@ -49,7 +58,6 @@ function getLocalConfig(params) {
     availableCards.length >= tableCardsAmount + 2 * playerCardsAmount
 
   return {
-    ...baseConfig,
     targetValue,
     playerCardsAmount: isValidStack
       ? playerCardsAmount
@@ -58,9 +66,10 @@ function getLocalConfig(params) {
       ? tableCardsAmount
       : baseConfig.tableCardsAmount,
     availableCards: isValidStack ? availableCards : baseConfig.availableCards,
-    cardType: ['image', 'number'].includes(params.cardType)
-      ? params.cardType
-      : baseConfig.cardType,
+    cardType:
+      params.cardType && ['image', 'number'].includes(params.cardType)
+        ? params.cardType
+        : baseConfig.cardType,
     pauseOnAiPlay:
       typeof params.pauseOnAiPlay === 'boolean'
         ? params.pauseOnAiPlay
@@ -72,7 +81,7 @@ function getLocalConfig(params) {
   }
 }
 
-const parsedQs = qs.parse(window.location.search, {
+const parsedQs = parse(window.location.search, {
   parseBooleans: true,
   parseNumbers: true,
   arrayFormat: 'comma',
@@ -83,12 +92,12 @@ const isValidRoomId = typeof parsedQs.r === 'string'
 // If valid roomId querystring param, we wait for remote config
 const initialState = isValidRoomId ? null : getLocalConfig(parsedQs)
 
-export default function ConfigProvider() {
+const ConfigProvider: React.FC = () => {
   const [initialConfig, setInitialConfig] = useState(initialState)
 
   useEffect(() => {
     if (!isValidRoomId) return
-    getRoomConfig(parsedQs.r)
+    getRoomConfig(parsedQs.r as string)
       .then(setInitialConfig)
       .catch((e) => {
         console.warn(
@@ -105,6 +114,8 @@ export default function ConfigProvider() {
       showRules={window.localStorage.getItem('showRules') !== 'false'}
     />
   ) : (
-    'Cargando la configuración de la sala...'
+    <span>Cargando la configuración de la sala...</span>
   )
 }
+
+export default ConfigProvider

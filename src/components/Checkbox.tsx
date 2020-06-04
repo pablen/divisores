@@ -1,16 +1,16 @@
-import PropTypes from 'prop-types'
 import React, { useCallback } from 'react'
+import PropTypes from 'prop-types'
 
 import styles from './Checkbox.module.css'
 
-export default function Checkbox({
-  labelProps = {},
+const Checkbox: React.FC<Props> = ({
+  labelProps,
   onChange,
   children,
   mt,
   mb,
   ...other
-}) {
+}) => {
   const handleChange = useCallback((e) => onChange(e.target.checked), [
     onChange,
   ])
@@ -24,9 +24,12 @@ export default function Checkbox({
 
   return (
     <label
-      className={[styles.container, labelProps.className || ''].join(' ')}
       {...(mt || mb ? inlineStyles : {})}
-      {...labelProps}
+      {...(labelProps || {})}
+      className={[
+        styles.container,
+        labelProps && labelProps.className ? labelProps.className : '',
+      ].join(' ')}
     >
       <input
         className={styles.input}
@@ -39,11 +42,25 @@ export default function Checkbox({
   )
 }
 
-Checkbox.propTypes = {
-  labelProps: PropTypes.object,
+const CheckboxPropTypes = {
+  labelProps: PropTypes.shape({
+    className: PropTypes.string,
+  }),
   children: PropTypes.node.isRequired,
   onChange: PropTypes.func.isRequired,
   checked: PropTypes.bool.isRequired,
   mt: PropTypes.string,
   mb: PropTypes.string,
 }
+
+Checkbox.propTypes = CheckboxPropTypes
+
+type Props = Omit<
+  PropTypes.InferProps<typeof CheckboxPropTypes> &
+    React.PropsWithoutRef<JSX.IntrinsicElements['input']>,
+  'onChange'
+> & {
+  onChange: (checked: boolean) => void
+}
+
+export default Checkbox
