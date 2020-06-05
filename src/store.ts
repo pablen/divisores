@@ -125,6 +125,11 @@ export function reducer(state: State, action: Action): State {
       })
 
     case 'player card selected':
+      if (!state.playerCards.includes(action.payload)) {
+        throw new Error(
+          `Player does not have a card with index ${action.payload}`
+        )
+      }
       return { ...state, selectedPlayerCard: action.payload, userMessage: null }
 
     case 'player card discarded':
@@ -145,6 +150,11 @@ export function reducer(state: State, action: Action): State {
       }
 
     case 'table card selected':
+      if (!state.tableCards.includes(action.payload)) {
+        throw new Error(
+          `Table does not have a card with index ${action.payload}`
+        )
+      }
       return {
         ...state,
         userMessage: null,
@@ -272,17 +282,31 @@ function range(start: number, amount: number): number[] {
   return Array.from(Array(amount), (_, i) => i + start)
 }
 
+function checkValidConfig(cfg: State['config']): void {
+  if (
+    cfg.tableCardsAmount + 2 * cfg.playerCardsAmount >
+    cfg.availableCards.length
+  ) {
+    throw new Error('Insufficient cards in deck')
+  }
+  const invalidValues = cfg.availableCards.filter(
+    (value) => value >= cfg.targetValue
+  )
+  if (invalidValues.length > 0) {
+    throw new Error(
+      `Some values in the deck (${invalidValues.join(
+        ', '
+      )}) are greater or equal than the target value (${cfg.targetValue})`
+    )
+  }
+}
+
 export function init({
   shuffledStack,
   isPlayerTurn,
   config,
 }: Pick<State, 'shuffledStack' | 'isPlayerTurn' | 'config'>): State {
-  if (
-    config.tableCardsAmount + 2 * config.playerCardsAmount >
-    config.availableCards.length
-  ) {
-    throw new Error('Insufficient cards in stack')
-  }
+  checkValidConfig(config)
   return {
     playerCards: range(0, config.playerCardsAmount),
     tableCards: range(2 * config.playerCardsAmount, config.tableCardsAmount),

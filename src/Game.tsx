@@ -23,6 +23,7 @@ import Btn from './components/Btn'
 
 const Game: React.FC<Props> = ({ initialConfig, showRules }) => {
   useEffect(() => {
+    if (!config.isDebugEnabled) return
     console.log(
       '%cInitial configuration',
       'font-weight: bold; color: blue;',

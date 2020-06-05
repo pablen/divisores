@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import FireStoreParser from 'firestore-parser'
 import { parse } from 'query-string'
 
-import { roomsApiUrlPattern, defaultConfig } from './config'
 import presets, { ConfigOptions, PresetName } from './presets'
+import { roomsApiUrlPattern, defaultConfig } from './config'
 import Game from './Game'
 
 function getRoomConfig(roomId: string): Promise<ConfigOptions> {
