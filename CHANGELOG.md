@@ -1,5 +1,11 @@
 # Registro de cambios
 
+## `v1.7.0`
+
+- El mazo se ordena ahora usando el algoritmo de Fisher-Yates
+- Migración de todo el proyecto a TypeScript
+- Se añadieron tests
+
 ## `v1.6.0`
 
 - El turno inicial se alterna cada vez que se juega nuevamente (en vez de ser aleatorio).
