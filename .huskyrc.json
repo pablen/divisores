@@ -1,5 +1,6 @@
 {
   "hooks": {
-    "pre-commit": "tsc && npm run test:all && lint-staged"
+    "pre-commit": "tsc && npm run test:ci && lint-staged",
+    "pre-push": "tsc -p cypress && npm run test:integration"
   }
 }
