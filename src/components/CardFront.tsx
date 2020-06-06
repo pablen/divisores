@@ -4,6 +4,7 @@ import React from 'react'
 const CardFront: React.FC<Props> = ({ value, type, ...other }) => (
   <svg
     preserveAspectRatio="xMinYMin"
+    data-cardtype={type}
     aria-hidden="true"
     viewBox="0 0 62 88"
     xmlns="http://www.w3.org/2000/svg"

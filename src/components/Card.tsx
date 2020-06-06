@@ -36,7 +36,9 @@ const Card: React.FC<Props> = ({
 
   return onClick ? (
     <motion.button
+      data-ishinted={isHinted}
       aria-pressed={!!isSelected}
+      data-testid={`card-${id}`}
       className={className}
       disabled={!!isDisabled}
       layoutId={`card-${id}`}
@@ -48,6 +50,7 @@ const Card: React.FC<Props> = ({
   ) : (
     <motion.div
       aria-pressed={!!isSelected}
+      data-testid={`card-${id}`}
       className={className}
       layoutId={`card-${id}`}
     >

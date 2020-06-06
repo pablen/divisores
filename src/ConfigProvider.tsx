@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import FireStoreParser from 'firestore-parser'
+import arrayShuffle from 'array-shuffle'
 import { parse } from 'query-string'
 
 import presets, { ConfigOptions, PresetName } from './presets'
 import { roomsApiUrlPattern, defaultConfig } from './config'
+import { getRandomTurn } from './utils'
 import Game from './Game'
 
 function getRoomConfig(roomId: string): Promise<ConfigOptions> {
@@ -108,10 +110,26 @@ const ConfigProvider: React.FC = () => {
       })
   }, [])
 
+  const handleShuffle = useCallback(
+    (arr: number[]) =>
+      process.env.NODE_ENV === 'development' && parsedQs.noShuffle
+        ? arr
+        : arrayShuffle(arr),
+    []
+  )
+
+  const initialIsPlayerTurn =
+    process.env.NODE_ENV === 'development' &&
+    typeof parsedQs.isPlayerTurn !== 'undefined'
+      ? Boolean(parsedQs.isPlayerTurn)
+      : getRandomTurn()
+
   return initialConfig ? (
     <Game
+      initialIsPlayerTurn={initialIsPlayerTurn}
       initialConfig={initialConfig}
       showRules={window.localStorage.getItem('showRules') !== 'false'}
+      shuffle={handleShuffle}
     />
   ) : (
     <span>Cargando la configuración de la sala...</span>
