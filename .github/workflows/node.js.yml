@@ -23,10 +23,4 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm test
-      - name: Zip Release
-        uses: TheDoctor0/zip-release@v0.3.0
-        with:
-          # Filename for archive
-          filename: escobapp.zip
-          # Base path for archive files
-          path: build
+      - run: npm run test:e2e
