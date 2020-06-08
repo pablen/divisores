@@ -272,7 +272,7 @@ const Game: React.FC<Props> = ({
             ))}
           </div>
           {isGameFinished && (
-            <div className={styles.gameSummary}>
+            <div className={styles.gameSummary} data-testid="gameSummary">
               <div className={styles.gameResult}>
                 {playerPoints > aiPoints
                   ? '🏆 ¡Ganaste! 🏆'
@@ -329,6 +329,7 @@ const Game: React.FC<Props> = ({
         <section className={styles.controlsSection}>
           {!isGameFinished && (canPlay || canDiscard) && (
             <Btn
+              data-testid="play-btn"
               className={styles.controlBtn}
               disabled={!canPlay && !canDiscard}
               onClick={handlePlayOrDiscard}

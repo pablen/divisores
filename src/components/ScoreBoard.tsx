@@ -25,27 +25,37 @@ const ScoreBoard: React.FC<Props> = ({
       <tr>
         <td>Por cartas acumuladas</td>
         <td>
-          {playerStackLength > aiStackLength ? '1' : '0'}{' '}
+          <span data-testid="playerPointsByCards">
+            {playerStackLength > aiStackLength ? '1' : '0'}
+          </span>{' '}
           <span className={styles.cardsAmount}>
             ({playerStackLength} cartas)
           </span>
         </td>
         <td>
-          {playerStackLength < aiStackLength ? '1' : '0'}{' '}
+          <span data-testid="aiPointsByCards">
+            {playerStackLength < aiStackLength ? '1' : '0'}
+          </span>{' '}
           <span className={styles.cardsAmount}>({aiStackLength} cartas)</span>
         </td>
       </tr>
       <tr>
         <td>Por escobas</td>
-        <td>{playerSweeps}</td>
-        <td>{aiSweeps}</td>
+        <td data-testid="playerPointsBySweeps">{playerSweeps}</td>
+        <td data-testid="aiPointsBySweeps">{aiSweeps}</td>
       </tr>
       <tr>
         <td>Puntos</td>
-        <td className={playerPoints > aiPoints ? styles.win : styles.loose}>
+        <td
+          data-testid="playerPointsTotal"
+          className={playerPoints > aiPoints ? styles.win : styles.loose}
+        >
           {playerPoints}
         </td>
-        <td className={playerPoints < aiPoints ? styles.win : styles.loose}>
+        <td
+          data-testid="aiPointsTotal"
+          className={playerPoints < aiPoints ? styles.win : styles.loose}
+        >
           {aiPoints}
         </td>
       </tr>
