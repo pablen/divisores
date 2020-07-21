@@ -1,5 +1,9 @@
 # Registro de cambios
 
+## `v1.8.0`
+
+- Modo Offline: se agregó un Service Worker para persistir la aplicación y permitir usarla incluso sin conectividad a internet.
+
 ## `v1.7.0`
 
 - El mazo se ordena ahora usando el algoritmo de Fisher-Yates
