@@ -14,6 +14,10 @@ El juego es adaptable para distintos usos didácticos y permite configurar los s
 - Pausar cuando juega la máquina o no.
 - Tiempo de espera antes de dar una pista de una posible jugada (o desactivar pistas por completo).
 
+## Modo Offline
+
+Una vez visitada la aplicación, la misma puede ser utilizada incluso sin conectividad a internet.
+
 ## LICENCIA
 
 [MIT](LICENSE)
