@@ -1,5 +1,10 @@
 # Registro de cambios
 
+## `v1.9.0`
+
+- Se añadió splash screen cuando la app corre en modo PWA en iOS
+- Status bar transparente cuando la app corre en modo PWA en iOS
+
 ## `v1.8.0`
 
 - Modo Offline: se agregó un Service Worker para persistir la aplicación y permitir usarla incluso sin conectividad a internet.
