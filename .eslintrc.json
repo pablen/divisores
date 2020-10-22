@@ -32,6 +32,7 @@
     }
   },
   "rules": {
+    "@typescript-eslint/explicit-function-return-type": "off",
     "react/boolean-prop-naming": ["warn"],
     "react/no-typos": ["error"],
     "react/button-has-type": ["warn"],

@@ -18,6 +18,36 @@ El juego es adaptable para distintos usos didácticos y permite configurar los s
 
 Una vez visitada la aplicación, la misma puede ser utilizada incluso sin conectividad a internet.
 
+## Instalación y correr en modo desarrollo
+
+```
+$ npm i
+$ npm start
+```
+
+## Correr tests unitarios
+
+```
+$ npm run test
+```
+
+## Correr tests end-to-end
+
+1. Primero hay que tener corriendo la aplicación:
+
+```
+$ npm run start
+```
+
+2. Verificar que la URL en donde está disponible la aplicación coincida con el valor de `baseUrl` definido en el archivo `cypress.json`.
+3. Ejecutar Cypress.
+
+```
+$ npm run cypress
+```
+
+4. Ejecutar los tests haciendo clic en el botón _Run all specs_.
+
 ## LICENCIA
 
 [MIT](LICENSE)
