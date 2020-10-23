@@ -8,18 +8,12 @@ import CardPlaceholder from './components/CardPlaceholder'
 import RulesDialog from './components/RulesDialog'
 import * as config from './config'
 import ConfigForm from './components/ConfigForm'
-import ScoreBoard from './components/ScoreBoard'
 import * as utils from './utils'
 import styles from './Game.module.css'
 import Card from './components/Card'
 import Btn from './components/Btn'
 
-const Game: React.FC<Props> = ({
-  initialIsPlayerTurn,
-  initialConfig,
-  showRules,
-  shuffle,
-}) => {
+const Game: React.FC<Props> = ({ initialConfig, showRules, shuffle }) => {
   React.useEffect(() => {
     if (!config.isDebugEnabled) return
     console.log(
@@ -32,8 +26,12 @@ const Game: React.FC<Props> = ({
   const [state, dispatch] = React.useReducer(
     reducer,
     {
-      shuffledStack: shuffle(initialConfig.availableCards),
-      isPlayerTurn: initialIsPlayerTurn,
+      shuffledStack: shuffle({
+        playerCardsAmount: initialConfig.playerCardsAmount,
+        availableCards: initialConfig.availableCards,
+        minDivisor: initialConfig.minDivisor,
+        maxDivisor: initialConfig.maxDivisor,
+      }),
       config: initialConfig,
     },
     init
@@ -46,108 +44,27 @@ const Game: React.FC<Props> = ({
 
   const hasPlayerCards = state.playerCards.length > 0
 
-  const hasAiCards = state.aiCards.length > 0
-
-  const isGameFinished = !hasPlayerCards && !hasAiCards && !hasStackEnoughCards
-
-  const playerPoints =
-    state.playerSweeps +
-    (state.playerStack.length > state.aiStack.length ? 1 : 0)
-
-  const aiPoints =
-    state.aiSweeps + (state.aiStack.length > state.playerStack.length ? 1 : 0)
-
-  const canDiscard =
-    !isGameFinished && state.isPlayerTurn && state.selectedPlayerCard !== null
+  const isGameFinished = !hasPlayerCards && !hasStackEnoughCards
 
   const canPlay =
     !isGameFinished &&
-    state.isPlayerTurn &&
     state.selectedPlayerCard !== null &&
-    state.selectedTableCards.length > 0
-
-  const timer = React.useRef<NodeJS.Timeout | null>(null)
-  React.useEffect(() => {
-    if (state.config.hintsDelay > 0 && state.isPlayerTurn && hasPlayerCards) {
-      timer.current = setTimeout(
-        () => dispatch({ type: 'hint requested' }),
-        state.config.hintsDelay * 1000
-      )
-    } else {
-      if (timer.current !== null) clearTimeout(timer.current)
-    }
-  }, [state.isPlayerTurn, hasPlayerCards, state.config.hintsDelay])
-
-  React.useEffect(() => {
-    if (state.selectedAiCard !== null && !state.config.pauseOnAiPlay) {
-      setTimeout(() => dispatch({ type: 'ai played' }), 2 * config.aiPlayDelay)
-    }
-  }, [state.selectedAiCard, state.config.pauseOnAiPlay])
+    state.selectedTableCard !== null
 
   React.useEffect(() => {
     if (isGameFinished) return
-    if (
-      (state.isPlayerTurn && !hasPlayerCards) ||
-      (!state.isPlayerTurn && !hasAiCards)
-    ) {
-      setTimeout(
-        () => dispatch({ type: 'new cards requested' }),
-        config.aiPlayDelay
-      )
-      return
+    if (!hasPlayerCards) {
+      setTimeout(() => dispatch({ type: 'new cards requested' }), 500)
     }
-    if (!state.isPlayerTurn && !isRulesVisible) {
-      setTimeout(
-        () => dispatch({ type: 'ai play requested' }),
-        config.aiPlayDelay
-      )
-    }
-  }, [
-    state.isPlayerTurn,
-    isGameFinished,
-    hasPlayerCards,
-    isRulesVisible,
-    hasAiCards,
-  ])
-
-  const aiMessage =
-    isGameFinished || state.isPlayerTurn ? (
-      ''
-    ) : state.selectedAiCard === null ? (
-      'Esperando a que juegue la máquina...'
-    ) : state.selectedTableCards.length === 0 ? (
-      `La máquina se descarta un ${state.shuffledStack[state.selectedAiCard]}`
-    ) : (
-      <>
-        La máquina juega{' '}
-        <span className={styles.condensed}>
-          {[
-            state.shuffledStack[state.selectedAiCard],
-            ...state.selectedTableCards.map((i) => state.shuffledStack[i]),
-          ].join(' + ')}{' '}
-          = {state.config.targetValue}
-        </span>
-      </>
-    )
-
-  const userMessage = isGameFinished
-    ? ''
-    : state.userMessage || (state.isPlayerTurn ? 'Tu Turno' : '')
+  }, [isGameFinished, hasPlayerCards, isRulesVisible])
 
   const handleConfigClick = React.useCallback(
     () => setIsConfigVisible((s) => !s),
     []
   )
-  const handleOkClick = React.useCallback(
-    () => dispatch({ type: 'ai play accepted' }),
-    []
-  )
+
   const handleTableCardSelected = React.useCallback(
-    (cardId) =>
-      dispatch({
-        type: 'table card selected',
-        payload: cardId,
-      }),
+    (cardId) => dispatch({ type: 'table card selected', payload: cardId }),
     []
   )
   const handlePlayAgain = React.useCallback(
@@ -155,21 +72,29 @@ const Game: React.FC<Props> = ({
       dispatch({
         type: 'reset',
         payload: {
-          shuffledStack: shuffle(state.config.availableCards),
+          shuffledStack: shuffle({
+            playerCardsAmount: state.config.playerCardsAmount,
+            availableCards: state.config.availableCards,
+            minDivisor: state.config.minDivisor,
+            maxDivisor: state.config.maxDivisor,
+          }),
         },
       }),
-    [state.config.availableCards, shuffle]
+    [
+      state.config.playerCardsAmount,
+      state.config.availableCards,
+      state.config.minDivisor,
+      state.config.maxDivisor,
+      shuffle,
+    ]
   )
   const handlePlayerCardSelected = React.useCallback(
     (cardId) => dispatch({ type: 'player card selected', payload: cardId }),
     []
   )
-  const handlePlayOrDiscard = React.useCallback(
-    () =>
-      dispatch({
-        type: canPlay ? 'play attempted' : 'player card discarded',
-      }),
-    [canPlay]
+  const handlePlay = React.useCallback(
+    () => dispatch({ type: 'play attempted' }),
+    []
   )
   const handleRulesDialogClose = React.useCallback(
     () => setIsRulesVisible(false),
@@ -184,12 +109,36 @@ const Game: React.FC<Props> = ({
       dispatch({
         type: 'config updated',
         payload: {
-          shuffledStack: shuffle(newConfig.availableCards),
+          shuffledStack: shuffle({
+            playerCardsAmount: newConfig.playerCardsAmount,
+            availableCards: newConfig.availableCards,
+            minDivisor: newConfig.minDivisor,
+            maxDivisor: newConfig.maxDivisor,
+          }),
           newConfig,
         },
       }),
     [shuffle]
   )
+
+  const hasValidPlays =
+    !hasPlayerCards ||
+    state.playerCards.some((playerIdx) =>
+      state.tableCards.some((tableIdx) => {
+        const playerCard = state.shuffledStack[playerIdx]
+        const tableCard = state.shuffledStack[tableIdx]
+        return (
+          Math.max(playerCard, tableCard) % Math.min(playerCard, tableCard) ===
+          0
+        )
+      })
+    )
+
+  const userMessage = isGameFinished
+    ? ''
+    : hasValidPlays
+    ? state.userMessage
+    : 'No quedan jugadas posibles!'
 
   return (
     <div className={styles.container}>
@@ -203,40 +152,6 @@ const Game: React.FC<Props> = ({
       </button>
 
       <AnimateSharedLayout>
-        <section className={styles.aiSection}>
-          <div className={styles.aiCards} data-testid="aiCards">
-            {state.aiCards.map((card) => (
-              <Card
-                isReversed={state.selectedAiCard !== card}
-                isSelected={state.selectedAiCard === card}
-                value={state.shuffledStack[card]}
-                type={state.config.cardType}
-                key={`card-${card}`}
-                id={card}
-              />
-            ))}
-          </div>
-          <div className={styles.aiDeck}>
-            {state.aiStack.map((card) => (
-              <Card
-                value={state.shuffledStack[card]}
-                type={state.config.cardType}
-                key={`card-${card}`}
-                id={card}
-              />
-            ))}
-          </div>
-        </section>
-
-        <section className={`${styles.messageSection} ${styles.aiMessage}`}>
-          {aiMessage}
-          {state.selectedAiCard !== null && state.config.pauseOnAiPlay && (
-            <Btn className={styles.okBtn} autoFocus onClick={handleOkClick}>
-              OK
-            </Btn>
-          )}
-        </section>
-
         <section
           className={[
             styles.tableSection,
@@ -260,9 +175,8 @@ const Game: React.FC<Props> = ({
           <div className={styles.tableCards} data-testid="tableCards">
             {state.tableCards.map((card) => (
               <Card
-                isSelected={state.selectedTableCards.includes(card)}
-                isDisabled={isGameFinished || !state.isPlayerTurn}
-                isHinted={state.hint.includes(card)}
+                isSelected={state.selectedTableCard === card}
+                isDisabled={isGameFinished}
                 onClick={handleTableCardSelected}
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
@@ -273,21 +187,7 @@ const Game: React.FC<Props> = ({
           </div>
           {isGameFinished && (
             <div className={styles.gameSummary} data-testid="gameSummary">
-              <div className={styles.gameResult}>
-                {playerPoints > aiPoints
-                  ? '🏆 ¡Ganaste! 🏆'
-                  : playerPoints < aiPoints
-                  ? 'Perdiste'
-                  : 'Empate'}
-              </div>
-              <ScoreBoard
-                playerStackLength={state.playerStack.length}
-                aiStackLength={state.aiStack.length}
-                playerSweeps={state.playerSweeps}
-                playerPoints={playerPoints}
-                aiSweeps={state.aiSweeps}
-                aiPoints={aiPoints}
-              />
+              <div className={styles.gameResult}>Partida Terminada</div>
               <Btn autoFocus onClick={handlePlayAgain} type="button">
                 Jugar De Nuevo
               </Btn>
@@ -297,6 +197,15 @@ const Game: React.FC<Props> = ({
 
         <section className={`${styles.messageSection} ${styles.userMessage}`}>
           {userMessage}
+          {!hasValidPlays && (
+            <Btn
+              className={styles.okBtn}
+              autoFocus
+              onClick={() => dispatch({ type: 'discard remaining cards' })}
+            >
+              OK
+            </Btn>
+          )}
         </section>
 
         <section className={styles.playerSection}>
@@ -304,8 +213,6 @@ const Game: React.FC<Props> = ({
             {state.playerCards.map((card) => (
               <Card
                 isSelected={state.selectedPlayerCard === card}
-                isDisabled={!state.isPlayerTurn}
-                isHinted={state.hint.includes(card)}
                 onClick={handlePlayerCardSelected}
                 value={state.shuffledStack[card]}
                 type={state.config.cardType}
@@ -327,15 +234,15 @@ const Game: React.FC<Props> = ({
         </section>
 
         <section className={styles.controlsSection}>
-          {!isGameFinished && (canPlay || canDiscard) && (
+          {!isGameFinished && canPlay && (
             <Btn
               data-testid="play-btn"
               className={styles.controlBtn}
-              disabled={!canPlay && !canDiscard}
-              onClick={handlePlayOrDiscard}
+              disabled={!canPlay}
+              onClick={handlePlay}
               type="button"
             >
-              {canPlay ? 'Jugar' : 'Descartar'}
+              Jugar
             </Btn>
           )}
         </section>
@@ -360,7 +267,6 @@ const Game: React.FC<Props> = ({
 }
 
 const GamePropTypes = {
-  initialIsPlayerTurn: PropTypes.bool.isRequired,
   initialConfig: utils.configPropTypes.isRequired,
   showRules: PropTypes.bool.isRequired,
   shuffle: PropTypes.func.isRequired,
@@ -368,6 +274,8 @@ const GamePropTypes = {
 
 Game.propTypes = GamePropTypes
 
-type Props = PropTypes.InferProps<typeof GamePropTypes>
+type Props = Omit<PropTypes.InferProps<typeof GamePropTypes>, 'shuffle'> & {
+  shuffle(args: Omit<ConfigOptions, 'cardType'>): number[]
+}
 
 export default Game

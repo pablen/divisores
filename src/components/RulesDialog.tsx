@@ -29,22 +29,10 @@ const RulesDialog: React.FC<Props> = ({ onClose, currentConfig }) => {
         </h2>
 
         <p>
-          Intentar reunir la mayor cantidad de cartas de la mesa con una de las
-          propias que sumen <strong>{currentConfig.targetValue} puntos</strong>.
+          Seleccionar una carta de la mesa con una carta propia cuyo valor sea
+          divisor.
         </p>
-        <p>
-          Si no se puede jugar se debe <strong>descartar</strong>.
-        </p>
-        <p>
-          Levantar todas las cartas de la mesa suma una <strong>escoba</strong>.
-        </p>
-        <p>Al finalizar el juego se suma:</p>
-        <p>
-          <strong>1 punto por cada escoba.</strong>
-        </p>
-        <p>
-          <strong>1 punto al que juntó más cartas.</strong>
-        </p>
+        <p>Intentar formar todos los pares de cartas de cada mano.</p>
 
         <div className={styles.checkboxContainer}>
           <Checkbox onChange={setDoNotShowAgain} checked={doNotShowAgain}>

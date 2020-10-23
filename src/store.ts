@@ -1,10 +1,9 @@
-import { getBestPlay, CardIndex } from './utils'
 import { isDebugEnabled } from './config'
 import { ConfigOptions } from './presets'
+import { CardIndex } from './utils'
 
 export type State = {
   config: ConfigOptions
-  isPlayerTurn: boolean
 
   /** A copy of availableCards that is randomly sorted at the start of each game */
   shuffledStack: ConfigOptions['availableCards']
@@ -28,52 +27,22 @@ export type State = {
   playerCards: CardIndex[]
 
   /**
-   * The cards in AI hand.
-   * Referenced as indices of the shuffledStack
-   */
-  aiCards: CardIndex[]
-
-  /**
    * The cards picked up by player plays.
    * Referenced as indices of the shuffledStack
    */
   playerStack: CardIndex[]
 
   /**
-   * The cards picked up by AI plays.
-   * Referenced as indices of the shuffledStack
+   * Table card selected for the current play.
+   * Referenced as an index of the shuffledStack
    */
-  aiStack: CardIndex[]
-
-  /**
-   * The cards for the best possible user play (if any).
-   * Referenced as indices of the shuffledStack
-   */
-  hint: CardIndex[]
-
-  /**
-   * Table cards selected for the current play (IA or player).
-   * Referenced as indices of the shuffledStack
-   */
-  selectedTableCards: CardIndex[]
+  selectedTableCard: CardIndex | null
 
   /**
    * Player card selected for the current play.
    * Referenced a an index of the shuffledStack
    */
   selectedPlayerCard: CardIndex | null
-
-  /**
-   * AI card selected for the current play.
-   * Referenced an index of the shuffledStack
-   */
-  selectedAiCard: CardIndex | null
-
-  /** The amount of player sweeps */
-  playerSweeps: number
-
-  /** The amount of AI sweeps */
-  aiSweeps: number
 
   /** Optional feedback for the player */
   userMessage: string | null
@@ -91,15 +60,11 @@ export type Action =
         newConfig: ConfigOptions
       }
     }
-  | { type: 'player card discarded' }
   | { type: 'player card selected'; payload: CardIndex }
   | { type: 'table card selected'; payload: CardIndex }
   | { type: 'new cards requested' }
-  | { type: 'ai play requested' }
-  | { type: 'ai play accepted' }
+  | { type: 'discard remaining cards' }
   | { type: 'play attempted' }
-  | { type: 'hint requested' }
-  | { type: 'ai played' }
 
 export function reducer(state: State, action: Action): State {
   if (isDebugEnabled) {
@@ -113,14 +78,12 @@ export function reducer(state: State, action: Action): State {
     case 'reset':
       return init({
         shuffledStack: action.payload.shuffledStack,
-        isPlayerTurn: !state.isPlayerTurn, // alternate first turn each game
         config: state.config,
       })
 
     case 'config updated':
       return init({
         shuffledStack: action.payload.shuffledStack,
-        isPlayerTurn: state.isPlayerTurn,
         config: { ...state.config, ...action.payload.newConfig },
       })
 
@@ -132,23 +95,6 @@ export function reducer(state: State, action: Action): State {
       }
       return { ...state, selectedPlayerCard: action.payload, userMessage: null }
 
-    case 'player card discarded':
-      if (typeof state.selectedPlayerCard !== 'number') {
-        throw new Error('Cannot discard card. None selected.')
-      }
-      return {
-        ...state,
-        isPlayerTurn: false,
-        selectedPlayerCard: null,
-        selectedTableCards: [],
-        hint: [],
-        userMessage: null,
-        tableCards: [...state.tableCards, state.selectedPlayerCard],
-        playerCards: state.playerCards.filter(
-          (v) => v !== state.selectedPlayerCard
-        ),
-      }
-
     case 'table card selected':
       if (!state.tableCards.includes(action.payload)) {
         throw new Error(
@@ -158,119 +104,57 @@ export function reducer(state: State, action: Action): State {
       return {
         ...state,
         userMessage: null,
-        selectedTableCards: state.selectedTableCards.includes(action.payload)
-          ? state.selectedTableCards.filter((v) => v !== action.payload)
-          : [...state.selectedTableCards, action.payload],
+        selectedTableCard: action.payload,
       }
 
     case 'play attempted': {
-      if (typeof state.selectedPlayerCard !== 'number') {
-        throw new Error('Cannot execute play. No player card selected.')
+      if (
+        typeof state.selectedPlayerCard !== 'number' ||
+        typeof state.selectedTableCard !== 'number'
+      ) {
+        throw new Error('Cannot execute play. No cards pair selected.')
       }
+
+      const playerCard = state.shuffledStack[state.selectedPlayerCard]
+      const tableCard = state.shuffledStack[state.selectedTableCard]
       const isValidPlay =
-        state.selectedTableCards.reduce(
-          (acc, current) => acc + state.shuffledStack[current],
-          state.shuffledStack[state.selectedPlayerCard]
-        ) === state.config.targetValue
+        Math.max(playerCard, tableCard) % Math.min(playerCard, tableCard) === 0
 
       if (!isValidPlay) {
         return {
           ...state,
-          userMessage: `Las cartas elegidas no suman ${state.config.targetValue}!`,
+          userMessage: 'Las cartas elegidas no son divisores!',
         }
       }
 
       const tableCards = state.tableCards.filter(
-        (v) => !state.selectedTableCards.includes(v)
+        (v) => v !== state.selectedTableCard
       )
 
       return {
         ...state,
-        selectedTableCards: [],
+        selectedTableCard: null,
         selectedPlayerCard: null,
-        isPlayerTurn: false,
         tableCards,
         playerCards: state.playerCards.filter(
           (v) => v !== state.selectedPlayerCard
         ),
         playerStack: [
           ...state.playerStack,
-          ...state.selectedTableCards,
+          state.selectedTableCard,
           state.selectedPlayerCard,
         ],
-        playerSweeps:
-          tableCards.length === 0 ? state.playerSweeps + 1 : state.playerSweeps,
         userMessage: null,
-        hint: [],
       }
     }
 
-    case 'hint requested': {
-      const hint = getBestPlay(
-        state.playerCards,
-        state.tableCards,
-        state.shuffledStack,
-        state.config.targetValue
-      )
-      return hint.length > 1 ? { ...state, hint } : state
-    }
-
-    case 'ai play requested': {
-      const [cardIndex, ...tableIndixes] = getBestPlay(
-        state.aiCards,
-        state.tableCards,
-        state.shuffledStack,
-        state.config.targetValue
-      )
-
-      return {
-        ...state,
-        selectedAiCard: cardIndex,
-        selectedTableCards: tableIndixes,
-      }
-    }
-
-    case 'ai play accepted':
-    case 'ai played': {
-      if (typeof state.selectedAiCard !== 'number') {
-        throw new Error('Cannot execute play. No AI card selected.')
-      }
-      if (state.selectedTableCards.length === 0) {
-        return {
-          ...state,
-          selectedAiCard: null,
-          isPlayerTurn: true,
-          tableCards: [...state.tableCards, state.selectedAiCard],
-          aiCards: state.aiCards.filter((v) => v !== state.selectedAiCard),
-        }
-      }
-
-      const tableCards = state.tableCards.filter(
-        (v) => !state.selectedTableCards.includes(v)
-      )
-
-      return {
-        ...state,
-        isPlayerTurn: true,
-        selectedTableCards: [],
-        selectedAiCard: null,
-        tableCards,
-        aiCards: state.aiCards.filter((v) => v !== state.selectedAiCard),
-        aiStack: [
-          ...state.aiStack,
-          ...state.selectedTableCards,
-          state.selectedAiCard,
-        ],
-        aiSweeps: tableCards.length === 0 ? state.aiSweeps + 1 : state.aiSweeps,
-      }
-    }
-
+    case 'discard remaining cards':
     case 'new cards requested':
       return {
         ...state,
         playerCards: state.stackCards.slice(0, state.config.playerCardsAmount),
         stackCards: state.stackCards.slice(2 * state.config.playerCardsAmount),
-        aiCards: state.stackCards.slice(
+        tableCards: state.stackCards.slice(
           state.config.playerCardsAmount,
           2 * state.config.playerCardsAmount
         ),
@@ -283,41 +167,29 @@ function range(start: number, amount: number): number[] {
 }
 
 function checkValidConfig(cfg: State['config']): void {
-  if (
-    cfg.tableCardsAmount + 2 * cfg.playerCardsAmount >
-    cfg.availableCards.length
-  ) {
-    throw new Error('Insufficient cards in deck')
-  }
-  const invalidValues = cfg.availableCards.filter(
-    (value) => value >= cfg.targetValue
-  )
+  const invalidValues = cfg.availableCards.filter((value) => value <= 1)
   if (invalidValues.length > 0) {
     throw new Error(
       `Some values in the deck (${invalidValues.join(
         ', '
-      )}) are greater or equal than the target value (${cfg.targetValue})`
+      )}) are lesser or equal than 1.`
     )
   }
 }
 
 export function init({
   shuffledStack,
-  isPlayerTurn,
   config,
-}: Pick<State, 'shuffledStack' | 'isPlayerTurn' | 'config'>): State {
+}: Pick<State, 'shuffledStack' | 'config'>): State {
   checkValidConfig(config)
   return {
     playerCards: range(0, config.playerCardsAmount),
-    tableCards: range(2 * config.playerCardsAmount, config.tableCardsAmount),
-    aiCards: range(config.playerCardsAmount, config.playerCardsAmount),
+    tableCards: range(config.playerCardsAmount, config.playerCardsAmount),
 
     stackCards: range(
-      2 * config.playerCardsAmount + config.tableCardsAmount,
+      2 * config.playerCardsAmount,
       Math.floor(
-        (shuffledStack.length -
-          config.tableCardsAmount -
-          2 * config.playerCardsAmount) /
+        (shuffledStack.length - 2 * config.playerCardsAmount) /
           (2 * config.playerCardsAmount)
       ) *
         2 *
@@ -326,19 +198,11 @@ export function init({
 
     shuffledStack,
 
-    selectedTableCards: [],
+    selectedTableCard: null,
     selectedPlayerCard: null,
-    selectedAiCard: null,
 
     playerStack: [],
-    aiStack: [],
 
-    hint: [],
-
-    playerSweeps: 0,
-    aiSweeps: 0,
-
-    isPlayerTurn,
     userMessage: null,
     config,
   }

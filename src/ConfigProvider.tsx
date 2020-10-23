@@ -1,29 +1,10 @@
-import React, { useState, useEffect, useCallback } from 'react'
-import FireStoreParser from 'firestore-parser'
 import arrayShuffle from 'array-shuffle'
 import { parse } from 'query-string'
+import React from 'react'
 
 import presets, { ConfigOptions, PresetName } from './presets'
-import { roomsApiUrlPattern, defaultConfig } from './config'
-import { getRandomTurn } from './utils'
+import { defaultConfig } from './config'
 import Game from './Game'
-
-function getRoomConfig(roomId: string): Promise<ConfigOptions> {
-  return fetch(roomsApiUrlPattern.replace('{roomId}', roomId))
-    .then((res) => res.json())
-    .then(
-      (json) =>
-        FireStoreParser<{ fields: { config: ConfigOptions } }>(json).fields
-          .config
-    )
-    .then((roomConfig) => {
-      console.log(
-        `Fetched remote configuration for room "${roomId}"`,
-        roomConfig
-      )
-      return roomConfig
-    })
-}
 
 interface QueryStringParams extends Partial<ConfigOptions> {
   preset?: PresetName
@@ -40,46 +21,35 @@ function getLocalConfig(params: QueryStringParams): ConfigOptions {
       ? params.playerCardsAmount
       : baseConfig.playerCardsAmount
 
-  const tableCardsAmount =
-    typeof params.tableCardsAmount === 'number' && params.tableCardsAmount >= 0
-      ? params.tableCardsAmount
-      : baseConfig.tableCardsAmount
+  const minDivisor =
+    typeof params.minDivisor === 'number' && params.minDivisor > 1
+      ? params.minDivisor
+      : baseConfig.minDivisor
 
-  const targetValue =
-    typeof params.targetValue === 'number' && params.targetValue > 2
-      ? params.targetValue
-      : baseConfig.targetValue
+  const maxDivisor =
+    typeof params.maxDivisor === 'number' &&
+    params.maxDivisor > 1 &&
+    params.maxDivisor >= minDivisor
+      ? params.maxDivisor
+      : baseConfig.maxDivisor
 
   const availableCards = Array.isArray(params.availableCards)
-    ? params.availableCards.filter(
-        (v) => typeof v === 'number' && v > 0 && v < targetValue
-      )
+    ? params.availableCards.filter((v) => typeof v === 'number' && v > 1)
     : baseConfig.availableCards
 
-  const isValidStack =
-    availableCards.length >= tableCardsAmount + 2 * playerCardsAmount
+  const isValidStack = availableCards.length >= playerCardsAmount
 
   return {
-    targetValue,
     playerCardsAmount: isValidStack
       ? playerCardsAmount
       : baseConfig.playerCardsAmount,
-    tableCardsAmount: isValidStack
-      ? tableCardsAmount
-      : baseConfig.tableCardsAmount,
     availableCards: isValidStack ? availableCards : baseConfig.availableCards,
+    minDivisor,
+    maxDivisor,
     cardType:
       params.cardType && ['image', 'number'].includes(params.cardType)
         ? params.cardType
         : baseConfig.cardType,
-    pauseOnAiPlay:
-      typeof params.pauseOnAiPlay === 'boolean'
-        ? params.pauseOnAiPlay
-        : baseConfig.pauseOnAiPlay,
-    hintsDelay:
-      typeof params.hintsDelay === 'number'
-        ? params.hintsDelay
-        : baseConfig.hintsDelay,
   }
 }
 
@@ -89,51 +59,42 @@ const parsedQs = parse(window.location.search, {
   arrayFormat: 'comma',
 })
 
-const isValidRoomId = typeof parsedQs.r === 'string'
+function createDeck({
+  playerCardsAmount,
+  availableCards,
+  minDivisor,
+  maxDivisor,
+}: Omit<ConfigOptions, 'cardType'>) {
+  const shuffleFn =
+    process.env.NODE_ENV === 'development' && parsedQs.noShuffle
+      ? (v: number[]) => v
+      : arrayShuffle
+  const shuffledCards = shuffleFn(availableCards)
+  let deck: ConfigOptions['availableCards'] = []
 
-// If valid roomId querystring param, we wait for remote config
-const initialState = isValidRoomId ? null : getLocalConfig(parsedQs)
-
-const ConfigProvider: React.FC = () => {
-  const [initialConfig, setInitialConfig] = useState(initialState)
-
-  useEffect(() => {
-    if (!isValidRoomId) return
-    getRoomConfig(parsedQs.r as string)
-      .then(setInitialConfig)
-      .catch((e) => {
-        console.warn(
-          `Error fetching remote configuration for room "${parsedQs.r}":`,
-          e.message
-        )
-        setInitialConfig(getLocalConfig(parsedQs))
-      })
-  }, [])
-
-  const handleShuffle = useCallback(
-    (arr: number[]) =>
-      process.env.NODE_ENV === 'development' && parsedQs.noShuffle
-        ? arr
-        : arrayShuffle(arr),
-    []
-  )
-
-  const initialIsPlayerTurn =
-    process.env.NODE_ENV === 'development' &&
-    typeof parsedQs.isPlayerTurn !== 'undefined'
-      ? Boolean(parsedQs.isPlayerTurn)
-      : getRandomTurn()
-
-  return initialConfig ? (
-    <Game
-      initialIsPlayerTurn={initialIsPlayerTurn}
-      initialConfig={initialConfig}
-      showRules={window.localStorage.getItem('showRules') !== 'false'}
-      shuffle={handleShuffle}
-    />
-  ) : (
-    <span>Cargando la configuración de la sala...</span>
-  )
+  for (
+    let i = 0;
+    i <
+    Math.floor(shuffledCards.length / playerCardsAmount) * playerCardsAmount;
+    i += playerCardsAmount
+  ) {
+    const playerCards = shuffledCards.slice(i, i + playerCardsAmount)
+    const tableCards = playerCards.map(
+      (card) =>
+        card *
+        (Math.floor(Math.random() * (maxDivisor + 1 - minDivisor)) + minDivisor)
+    )
+    deck = deck.concat(playerCards, shuffleFn(tableCards))
+  }
+  return deck
 }
+
+const ConfigProvider: React.FC = () => (
+  <Game
+    initialConfig={getLocalConfig(parsedQs)}
+    showRules={window.localStorage.getItem('showRules') !== 'false'}
+    shuffle={createDeck}
+  />
+)
 
 export default ConfigProvider

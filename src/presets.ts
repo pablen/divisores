@@ -1,33 +1,24 @@
-export type PresetName = 'del10' | 'del15' | 'del100'
+export type PresetName = 'cartas3' | 'cartas4' | 'cartas5'
 export type CardType = 'image' | 'number'
 
 export type ConfigOptions = {
-  /** Card values included in the game deck */
+  /** Card values the player can get */
   availableCards: number[]
 
-  /** The value that played cards must sum up to */
-  targetValue: number
-
-  /** The amount of cards on the table the game starts with */
-  tableCardsAmount: number
-
-  /** The amount of cards each player starts the game with */
+  /** The amount of cards the player starts the game with */
   playerCardsAmount: number
+
+  /** The minimum divisor used to generate table cards values */
+  minDivisor: number
+
+  /** The maximum divisor used to generate table cards values */
+  maxDivisor: number
 
   /**
    * The cards design variant.
    * Some variants can be restricted to certain value ranges.
    */
   cardType: CardType
-
-  /** Wether to require the user to manually confirm an AI play */
-  pauseOnAiPlay: boolean
-
-  /**
-   * The amount of seconds to wait before hinting the best possible play.
-   * Use 0 to disable hints.
-   */
-  hintsDelay: number
 }
 
 type Presets = {
@@ -38,48 +29,36 @@ type Presets = {
 }
 
 const presets: Presets = {
-  del10: {
-    label: 'Sumar 10',
+  cartas3: {
+    label: '3 cartas',
     options: {
-      // prettier-ignore
-      availableCards : [1, 1, 1, 1, 1, 2, 2, 2, 3,
-        3, 3, 4, 4, 5, 5, 5, 6, 6, 7, 7, 8, 8, 9],
-      targetValue: 10,
-      tableCardsAmount: 4,
+      availableCards: [2, 2, 2, 3, 3, 3, 5, 5, 7, 7, 11, 11, 13, 17, 19],
       playerCardsAmount: 3,
+      minDivisor: 2,
+      maxDivisor: 10,
       cardType: 'image',
-      pauseOnAiPlay: true,
-      hintsDelay: 5,
     },
   },
 
-  del15: {
-    label: 'Sumar 15',
+  cartas4: {
+    label: '4 cartas',
     options: {
-      // prettier-ignore
-      availableCards : [1, 1, 1, 1, 2, 2, 2, 3, 3, 3, 4, 4, 5,
-        5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, 10, 11, 12, 13, 14],
-      targetValue: 15,
-      tableCardsAmount: 4,
-      playerCardsAmount: 3,
+      availableCards: [2, 2, 2, 3, 3, 3, 5, 5, 7, 7, 11, 11, 13, 17, 19],
+      playerCardsAmount: 4,
+      minDivisor: 2,
+      maxDivisor: 10,
       cardType: 'image',
-      pauseOnAiPlay: true,
-      hintsDelay: 5,
     },
   },
 
-  del100: {
-    label: 'Sumar 100',
+  cartas5: {
+    label: '5 cartas',
     options: {
-      // prettier-ignore
-      availableCards : [10, 10, 10, 10, 10, 20, 20, 20, 30,
-        30, 30, 40, 40, 50, 50, 60, 60, 70, 70, 80, 80, 90],
-      targetValue: 100,
-      tableCardsAmount: 4,
-      playerCardsAmount: 3,
+      availableCards: [2, 2, 2, 3, 3, 3, 5, 5, 7, 7, 11, 11, 13, 17, 19],
+      playerCardsAmount: 5,
+      minDivisor: 2,
+      maxDivisor: 10,
       cardType: 'number',
-      pauseOnAiPlay: true,
-      hintsDelay: 5,
     },
   },
 }

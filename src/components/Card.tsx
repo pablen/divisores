@@ -11,18 +11,13 @@ const Card: React.FC<Props> = ({
   isReversed,
   isDisabled,
   isSelected,
-  isHinted,
   onClick,
   value,
   type,
   id,
 }) => {
   const actualType = value > 10 ? 'number' : type || 'image'
-  const className = [
-    styles.container,
-    styles[`type-${actualType}`],
-    isHinted ? styles.isHinted : '',
-  ].join(' ')
+  const className = [styles.container, styles[`type-${actualType}`]].join(' ')
 
   const image = isReversed ? (
     <CardBack className={styles.back} />
@@ -36,7 +31,6 @@ const Card: React.FC<Props> = ({
 
   return onClick ? (
     <motion.button
-      data-ishinted={isHinted}
       aria-pressed={!!isSelected}
       data-testid={`card-${id}`}
       className={className}
@@ -63,7 +57,6 @@ const CardPropTypes = {
   isReversed: PropTypes.bool,
   isSelected: PropTypes.bool,
   isDisabled: PropTypes.bool,
-  isHinted: PropTypes.bool,
   onClick: PropTypes.func,
   value: PropTypes.number.isRequired,
   type: PropTypes.oneOf<'number' | 'image'>(['number', 'image']),
